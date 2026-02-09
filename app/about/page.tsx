@@ -11,6 +11,40 @@ export default function AboutPage() {
         <li>Professional team</li>
         <li>Customer satisfaction</li>
       </ul>
+
+      {/* 2 columns */}
+      <div className="flex flex-col md:flex-row gap-6 pt-6">
+        <div className="flex-1 bg-gray-100 p-4 rounded-lg">
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+            Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+        </div>
+
+        <div className="flex-1 bg-gray-100 p-4 rounded-lg">
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse 
+            cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </div>
+      </div>
+
+      {/* 2 rows */}
+      <div className="grid gap-6 pt-6">
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+            Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.
+          </p>
+        </div>
+
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <p>
+            Sed nisi. Nulla quis sem at nibh elementum imperdiet. 
+            Duis sagittis ipsum. Praesent mauris.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

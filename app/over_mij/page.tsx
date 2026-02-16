@@ -149,7 +149,7 @@ export default function AboutMePage() {
           </div>
 
           <div className="lg:col-span-8 space-y-16">
-            <h3 className="text-sm font-bold tracking-[0.3em] uppercase text-red-900">Mijn Parcours</h3>
+            <h3 className="text-sm font-bold tracking-[0.3em] uppercase text-red-900">Mijn Tijdlijn</h3>
             
             <div className="space-y-0">
               {timeline.map((item, idx) => {

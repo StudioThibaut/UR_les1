@@ -23,9 +23,9 @@ export default function HomePage() {
 
   // 3. SLIDER LOGIC
   const projects = [
-    { title: "FOTOGRAFIE", image: "/IMG/Fotografie_Leporello.jpg", link: "/project_fotografie" },
-    { title: "STAGE T-SHIRT", image: "/IMG/T-shirt_Stage.jpg", link: "/project_tshirt" },
-    { title: "IGNITION", image: "/IMG/Ignition3.jpg", link: "/project_ignition" },
+    { title: "FOTOGRAFIE", image: "/IMG/Fotografie_Leporello.jpg", link: "/project_1" },
+    { title: "STAGE T-SHIRT", image: "/IMG/T-shirt_Stage.jpg", link: "/project_2" },
+    { title: "IGNITION", image: "/IMG/Ignition3.jpg", link: "/project_3" },
   ]
 
   const [currentIndex, setCurrentIndex] = useState(0)

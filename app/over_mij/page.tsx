@@ -89,7 +89,7 @@ export default function AboutMePage() {
             <div className="absolute -inset-4 border border-red-900/10 rounded-[2.5rem] translate-x-4 translate-y-4 transition-transform group-hover:translate-x-2 group-hover:translate-y-2 duration-700"></div>
             <div className="relative w-full aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl bg-gray-100">
               <Image
-                src="/IMG/Wie_ben_ik.jpg"
+                src="/IMG/Thibaut.jpg"
                 alt="Thibaut Vanden Eynden"
                 fill
                 className="object-cover grayscale hover:grayscale-0 transition-all duration-1000"

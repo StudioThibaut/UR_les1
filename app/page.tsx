@@ -1,83 +1,170 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowRight, Cookie, ShieldCheck, FileText } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
-export default function Home() {
-  const [title, setTitle] = useState("")
-  const fullTitle = "STUDIO THIBAUT"
+export default function HomePage() {
+  const fullLastName = "VANDEN EYNDEN"
+  const [lastName, setLastName] = useState("")
+  const [scrollProgress, setScrollProgress] = useState(0)
 
+  // 1. TYPING EFFECT LOGIC
   useEffect(() => {
     let index = 0
     const interval = setInterval(() => {
-      setTitle(fullTitle.slice(0, index + 1))
+      setLastName(fullLastName.slice(0, index + 1))
       index++
-      if (index === fullTitle.length) clearInterval(interval)
-    }, 100)
+      if (index === fullLastName.length) clearInterval(interval)
+    }, 200)
     return () => clearInterval(interval)
   }, [])
 
+  // 3. SLIDER LOGIC
+  const projects = [
+    { title: "FOTOGRAFIE", image: "/IMG/Fotografie_Leporello.jpg", link: "/project_1" },
+    { title: "STAGE T-SHIRT", image: "/IMG/T-shirt_Stage.jpg", link: "/project_2" },
+    { title: "IGNITION", image: "/IMG/Ignition3.jpg", link: "/project_3" },
+  ]
+
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  const nextSlide = () => setCurrentIndex((prev) => (prev === projects.length - 1 ? 0 : prev + 1))
+  const prevSlide = () => setCurrentIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1))
+
+  useEffect(() => {
+    const interval = setInterval(nextSlide, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // 2. SCROLL PROGRESS LOGIC (De rode balk bovenaan)
+  useEffect(() => {
+    const updateScrollProgress = () => {
+      const currentScrollY = window.scrollY
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
+      const progress = (currentScrollY / scrollHeight) * 100
+      setScrollProgress(progress)
+    }
+
+    window.addEventListener("scroll", updateScrollProgress)
+    return () => window.removeEventListener("scroll", updateScrollProgress)
+  }, [])
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white font-sans selection:bg-red-100 selection:text-red-900">
-      <main className="w-full max-w-[1100px] px-6 lg:px-12 py-24">
-        
-        {/* HERO SECTION */}
-        <section className="mb-24">
-          <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-gray-400 block mb-4">
-            Creative Portfolio
-          </span>
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-red-900 uppercase leading-[0.85]">
-            {title}<span className="ml-1 opacity-40 animate-pulse">|</span>
+    <main className="relative flex flex-col items-center min-h-screen bg-white overflow-x-hidden font-sans">
+      
+      {/* SCROLL PROGRESS BAR */}
+      <div 
+        className="fixed top-0 left-0 h-1 bg-red-900 z-[100] transition-all duration-150 ease-out"
+        style={{ width: `${scrollProgress}%` }}
+      />
+
+      {/* HERO SECTION */}
+      <section className="flex flex-col items-center justify-center min-h-[90vh] w-full px-6 lg:px-12 text-center relative">
+        <div className="flex flex-col items-center relative z-10">
+          <h1 className="leading-[0.8] mb-6">
+            <span className="block font-barlow text-[clamp(3rem,8vw,9rem)] font-light tracking-wide uppercase text-gray-900">
+              Thibaut
+            </span>
+            <span className="block text-red-900 text-[clamp(3rem,8vw,9rem)] font-bold tracking-tight whitespace-nowrap min-h-[1.1em]">
+              {lastName}
+              <span className="ml-1 opacity-40 animate-pulse">|</span>
+            </span>
           </h1>
-          <div className="w-24 h-1 bg-red-900 mt-10"></div>
-        </section>
 
-        {/* NAVIGATION GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          
-          {/* LINK: COOKIES */}
-          <Link href="/cookie-settings" className="group p-10 bg-gray-50 rounded-[2rem] border border-gray-100 hover:border-red-900/20 transition-all duration-500">
-            <Cookie size={20} className="text-red-900 mb-6 group-hover:rotate-12 transition-transform" />
-            <h2 className="text-xs font-bold uppercase tracking-[0.2em] mb-2">Cookie Settings</h2>
-            <p className="text-sm text-gray-500 font-light leading-relaxed mb-6">Manage your privacy and data preferences.</p>
-            <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-red-900 transition-colors">
-              Configure <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
+          <p className="text-xl md:text-2xl text-gray-500 max-w-3xl tracking-wide uppercase font-medium">
+            Grafisch ontwerp <span className="mx-2 text-red-900/10">|</span> Branding <span className="mx-2 text-red-900/10">|</span> Fotografie
+          </p>
 
-          {/* LINK: COPYRIGHT */}
-          <Link href="/copyright-regulations" className="group p-10 bg-gray-50 rounded-[2rem] border border-gray-100 hover:border-red-900/20 transition-all duration-500">
-            <ShieldCheck size={20} className="text-red-900 mb-6 group-hover:scale-110 transition-transform" />
-            <h2 className="text-xs font-bold uppercase tracking-[0.2em] mb-2">Copyright</h2>
-            <p className="text-sm text-gray-500 font-light leading-relaxed mb-6">Intellectual property and usage rights.</p>
-            <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-red-900 transition-colors">
-              Read More <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-6 mt-12 opacity-0 animate-fadeIn transition-all">
+            <Link
+              href="/portfolio"
+              className="px-10 py-4 bg-red-900 text-white rounded-full font-semibold hover:bg-black transition-all duration-300 shadow-xl shadow-red-900/10 hover:shadow-none"
+            >
+              Bekijk Projecten
+            </Link>
+            <Link
+              href="/over_mij"
+              className="px-10 py-4 border-2 border-red-900 text-red-900 rounded-full font-semibold hover:bg-red-900 hover:text-white transition-all duration-300"
+            >
+              Over Mij
+            </Link>
+          </div>
+        </div>
+        
+        {/* SCROLL INDICATOR PIJL/LIJN */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30 animate-bounce">
+          <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Scroll</span>
+          <div className="w-[1px] h-8 bg-gray-900"></div>
+        </div>
+      </section>
 
-          {/* LINK: TERMS */}
-          <Link href="/terms-of-agreement" className="group p-10 bg-gray-50 rounded-[2rem] border border-gray-100 hover:border-red-900/20 transition-all duration-500">
-            <FileText size={20} className="text-red-900 mb-6 group-hover:-translate-y-1 transition-transform" />
-            <h2 className="text-xs font-bold uppercase tracking-[0.2em] mb-2">Terms</h2>
-            <p className="text-sm text-gray-500 font-light leading-relaxed mb-6">General terms of agreement for our services.</p>
-            <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-red-900 transition-colors">
-              View Terms <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
-
+      {/* PROJECT SLIDER SECTION */}
+      <section className="max-w-7xl w-full px-6 lg:px-12 py-20 relative">
+        <div className="flex justify-between items-end mb-12">
+          <h2 className="text-4xl font-bold text-red-900 uppercase tracking-tighter">
+            Mijn projecten
+          </h2>
+          <div className="hidden md:flex gap-4">
+            <button onClick={prevSlide} className="p-3 border border-red-900/20 rounded-full hover:bg-red-900 hover:text-white transition-all">
+              <ChevronLeft size={24} />
+            </button>
+            <button onClick={nextSlide} className="p-3 border border-red-900/20 rounded-full hover:bg-red-900 hover:text-white transition-all">
+              <ChevronRight size={24} />
+            </button>
+          </div>
         </div>
 
-        {/* BOTTOM DECORATION */}
-        <footer className="mt-32 flex justify-between items-center text-[10px] font-bold uppercase tracking-[0.3em] text-gray-300">
-          <span>© 2024 Studio Thibaut</span>
-          <div className="flex gap-8">
-            <span className="hover:text-red-900 cursor-pointer transition-colors">Instagram</span>
-            <span className="hover:text-red-900 cursor-pointer transition-colors">LinkedIn</span>
+        <div className="relative overflow-hidden rounded-[2rem] shadow-2xl bg-gray-50">
+          <div
+            className="flex transition-transform duration-1000 cubic-bezier(0.4, 0, 0.2, 1)"
+            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          >
+            {projects.map((project, index) => (
+              <Link key={index} href={project.link} className="min-w-full relative group overflow-hidden">
+                <Image
+                  src={project.image}
+                  alt={`Project ${project.title}`}
+                  width={1400}
+                  height={800}
+                  className="object-cover w-full h-[600px] transition duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-12">
+                  <h3 className="text-white text-5xl font-bold tracking-tight transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                    {project.title}
+                  </h3>
+                  <p className="text-white/70 mt-2 font-medium">Klik om project te bekijken →</p>
+                </div>
+              </Link>
+            ))}
           </div>
-        </footer>
+        </div>
+      </section>
 
-      </main>
-    </div>
-  );
+      {/* OVER MIJ TEASER SECTION */}
+      <section className="max-w-3xl w-full px-6 py-24 text-center border-t border-gray-100">
+        <h2 className="text-4xl font-bold mb-8 text-red-900 uppercase tracking-tighter">De Ontwerper</h2>
+        <p className="text-gray-700 text-xl leading-relaxed font-light">
+          Ik ben <span className="font-bold">Thibaut Vanden Eynden</span>, een creatieve grafisch ontwerper gespecialiseerd in branding, fotografie en visuele communicatie. Mijn stijl combineert esthetiek met een sterk concept, waarbij elk project een uniek verhaal vertelt.
+        </p>
+        <Link
+          href="/over_mij"
+          className="mt-10 inline-block text-red-900 font-bold border-b-2 border-red-900 pb-1 hover:text-black hover:border-black transition-all"
+        >
+          Ontdek mijn verhaal
+        </Link>
+      </section>
+
+      <style jsx>{`
+        .animate-fadeIn {
+          animation: fadeIn 1.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+          0% { opacity: 0; transform: translateY(10px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </main>
+  )
 }

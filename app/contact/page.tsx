@@ -94,7 +94,7 @@ export default function ContactForm() {
 
         {/* HEADER SECTION */}
         <header className="max-w-4xl">
-          <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors mb-12 group">
+          <Link href="/home" className="inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors mb-12 group">
             <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
             <span className="text-xs font-bold tracking-[0.2em] uppercase">Terug naar home</span>
           </Link>

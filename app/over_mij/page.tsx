@@ -2,7 +2,8 @@
 
 import Image from "next/image"
 import { useState, useEffect } from "react"
-import { ArrowUpRight, Code, Camera, Fingerprint, Lightbulb, PenTool, Terminal } from "lucide-react"
+import { ArrowUpRight, Code, Camera, Fingerprint, Lightbulb, PenTool, Terminal, X } from "lucide-react"
+import Link from "next/link"
 
 export default function AboutMePage() {
   const [title, setTitle] = useState("")
@@ -16,7 +17,7 @@ export default function AboutMePage() {
       setTitle(fullTitle.slice(0, index + 1))
       index++
       if (index === fullTitle.length) clearInterval(interval)
-    }, 200)
+    }, 150)
     return () => clearInterval(interval)
   }, [])
 
@@ -26,7 +27,7 @@ export default function AboutMePage() {
       const currentScrollY = window.scrollY
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
       const progress = (currentScrollY / scrollHeight) * 100
-      setScrollProgress(progress)
+      setScrollProgress(progress > 0 ? progress : 0)
     }
 
     window.addEventListener("scroll", updateScrollProgress)
@@ -48,7 +49,7 @@ export default function AboutMePage() {
   ]
 
   return (
-    <main className="min-h-screen bg-white text-gray-900 selection:bg-red-900 selection:text-white relative font-sans">
+    <main className="min-h-screen bg-white text-gray-900 selection:bg-red-900 selection:text-white relative font-sans overflow-x-hidden">
       
       {/* SCROLL PROGRESS BAR */}
       <div 
@@ -56,27 +57,27 @@ export default function AboutMePage() {
         style={{ width: `${scrollProgress}%` }}
       />
 
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-32 space-y-32">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-16 md:py-32 space-y-20 md:space-y-32">
 
         {/* HERO */}
         <section className="max-w-5xl">
-          <h1 className="text-5xl lg:text-6xl font-bold tracking-tight text-red-900 uppercase">
-            {title}<span className="ml-1 opacity-40 animate-pulse">|</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-red-900 uppercase leading-tight">
+            {title}<span className="ml-1 opacity-40 animate-pulse"></span>
           </h1>
 
-          <div className="w-24 h-1 bg-red-900 mt-6 mb-10 origin-left animate-expand"></div>
+          <div className="w-20 md:w-24 h-1 bg-red-900 mt-4 md:mt-6 mb-8 md:mb-10 origin-left animate-expand"></div>
           
-          <div className="grid md:grid-cols-12 gap-12 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
             <div className="md:col-span-8">
-              <p className="text-2xl lg:text-4xl text-gray-700 leading-tight font-light italic">
+              <p className="text-xl md:text-2xl lg:text-4xl text-gray-700 leading-tight font-light italic">
                 "Ik geloof dat de krachtigste designs ontstaan op het snijvlak van <span className="text-gray-900 font-normal not-italic underline decoration-red-900/30 italic">analoge precisie</span> en <span className="text-gray-900 font-normal not-italic underline decoration-red-900/30 italic">digitale innovatie</span>."
               </p>
             </div>
-            <div className="md:col-span-4 space-y-4 pt-4">
-               <div className="flex items-center gap-3 text-red-900 font-bold uppercase text-xs tracking-widest">
+            <div className="md:col-span-4 space-y-4 pt-2 md:pt-4">
+               <div className="flex items-center gap-3 text-red-900 font-bold uppercase text-[10px] md:text-xs tracking-widest">
                   <Fingerprint size={20} /> Identity
                </div>
-               <p className="text-xs text-gray-400 leading-relaxed uppercase tracking-wider font-medium">
+               <p className="text-[10px] md:text-xs text-gray-400 leading-relaxed uppercase tracking-wider font-medium">
                   Thibaut Vanden Eynden — Digital Creator, Fotograaf en Designer gebaseerd in Vorselaar.
                </p>
             </div>
@@ -84,10 +85,10 @@ export default function AboutMePage() {
         </section>
 
         {/* FOTO + BIO */}
-        <section className="grid lg:grid-cols-2 gap-24 items-start">
-          <div className="relative group">
-            <div className="absolute -inset-4 border border-red-900/10 rounded-[2.5rem] translate-x-4 translate-y-4 transition-transform group-hover:translate-x-2 group-hover:translate-y-2 duration-700"></div>
-            <div className="relative w-full aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl bg-gray-100">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-24 items-start">
+          <div className="relative group px-4 md:px-0">
+            <div className="absolute -inset-2 md:-inset-4 border border-red-900/10 rounded-2xl md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4 transition-transform group-hover:translate-x-1 group-hover:translate-y-1 duration-700"></div>
+            <div className="relative w-full aspect-[4/5] rounded-xl md:rounded-[2rem] overflow-hidden shadow-2xl bg-gray-100">
               <Image
                 src="/IMG/Thibaut2.jpg"
                 alt="Thibaut Vanden Eynden"
@@ -98,10 +99,10 @@ export default function AboutMePage() {
             </div>
           </div>
 
-          <div className="space-y-12 pt-8">
-            <div className="space-y-6">
-              <h2 className="text-4xl font-black uppercase tracking-tighter text-red-900">Mijn Verhaal</h2>
-              <div className="space-y-6 text-gray-600 leading-relaxed text-lg font-light">
+          <div className="space-y-8 md:space-y-12 md:pt-8">
+            <div className="space-y-4 md:space-y-6">
+              <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-red-900">Mijn Verhaal</h2>
+              <div className="space-y-4 md:space-y-6 text-gray-600 leading-relaxed text-base md:text-lg font-light">
                 <p>
                   Mijn reis in de grafische wereld begon in Turnhout, waar ik de technische fundamenten van het vak leerde. Daar ontdekte ik dat design meer is dan alleen esthetiek; het is een technisch proces van precisie en voorbereiding. Deze <strong>analoge basis</strong> neem ik elke dag mee in mijn digitale werk.
                 </p>
@@ -111,67 +112,67 @@ export default function AboutMePage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-8 border-t border-gray-100 pt-12">
+            <div className="grid grid-cols-2 gap-6 md:gap-8 border-t border-gray-100 pt-8 md:pt-12">
               <div className="space-y-2">
                 <Lightbulb className="text-red-900" size={24} />
-                <h4 className="font-bold uppercase text-sm tracking-widest">Conceptueel</h4>
-                <p className="text-xs text-gray-400 uppercase tracking-wider italic">Gevormd door strategie.</p>
+                <h4 className="font-bold uppercase text-[10px] md:text-sm tracking-widest">Conceptueel</h4>
+                <p className="text-[9px] md:text-xs text-gray-400 uppercase tracking-wider italic">Gevormd door strategie.</p>
               </div>
               <div className="space-y-2">
                 <Terminal className="text-red-900" size={24} />
-                <h4 className="font-bold uppercase text-sm tracking-widest">Technisch</h4>
-                <p className="text-xs text-gray-400 uppercase tracking-wider italic">Klaar voor de toekomst.</p>
+                <h4 className="font-bold uppercase text-[10px] md:text-sm tracking-widest">Technisch</h4>
+                <p className="text-[9px] md:text-xs text-gray-400 uppercase tracking-wider italic">Klaar voor de toekomst.</p>
               </div>
             </div>
           </div>
         </section>
 
         {/* SKILLS & TIJDLIJN */}
-        <section className="grid lg:grid-cols-12 gap-20 border-t border-gray-100 pt-20">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20 border-t border-gray-100 pt-12 md:pt-20">
           
-          <div className="lg:col-span-4 space-y-10">
-            <div className="space-y-6">
-              <h3 className="text-sm font-bold tracking-[0.3em] uppercase text-red-900">Expertise</h3>
+          <div className="lg:col-span-4 space-y-8 md:space-y-10">
+            <div className="space-y-4 md:space-y-6">
+              <h3 className="text-[10px] md:text-sm font-bold tracking-[0.3em] uppercase text-red-900">Expertise</h3>
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill) => (
-                  <span key={skill} className="px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:border-red-900 hover:text-red-900 transition-colors">
+                  <span key={skill} className="px-2 md:px-3 py-1 md:py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-[8px] md:text-[9px] font-bold uppercase tracking-widest hover:border-red-900 hover:text-red-900 transition-colors cursor-default">
                     {skill}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="p-6 bg-gray-50 rounded-[1.5rem] border border-gray-100">
-               <p className="text-xs text-gray-500 font-light italic leading-relaxed">
+            <div className="p-5 md:p-6 bg-gray-50 rounded-xl md:rounded-[1.5rem] border border-gray-100">
+               <p className="text-[10px] md:text-xs text-gray-500 font-light italic leading-relaxed">
                  "Design moet niet alleen gezien worden, het moet gevoeld worden. Elk detail versterkt de ervaring."
                </p>
             </div>
           </div>
 
-          <div className="lg:col-span-8 space-y-16">
-            <h3 className="text-sm font-bold tracking-[0.3em] uppercase text-red-900">Mijn Tijdlijn</h3>
+          <div className="lg:col-span-8 space-y-10 md:space-y-16">
+            <h3 className="text-[10px] md:text-sm font-bold tracking-[0.3em] uppercase text-red-900">Mijn Tijdlijn</h3>
             
-            <div className="space-y-0">
+            <div className="space-y-0 relative">
               {timeline.map((item, idx) => {
                 const showYear = idx === 0 || item.year !== timeline[idx - 1].year;
                 
                 return (
-                  <div key={idx} className={`grid grid-cols-[80px_1fr] gap-8 group ${showYear ? 'mt-10' : 'mt-4'}`}>
-                    <div className="text-2xl font-black text-gray-200 group-hover:text-red-900 transition-colors duration-500 pt-1 text-right">
+                  <div key={idx} className={`grid grid-cols-[60px_1fr] md:grid-cols-[80px_1fr] gap-4 md:gap-8 group ${showYear ? 'mt-8 md:mt-10' : 'mt-4'}`}>
+                    <div className="text-lg md:text-2xl font-black text-gray-200 group-hover:text-red-900 transition-colors duration-500 pt-1 text-right tabular-nums">
                       {showYear ? item.year : ""}
                     </div>
 
-                    <div className="relative pl-8 border-l border-gray-100 group-hover:border-red-900/30 transition-colors duration-500 pb-8">
-                      <div className={`absolute left-[-5px] top-3 w-2 h-2 rounded-full transition-all duration-500 ${showYear ? 'bg-red-900 scale-125' : 'bg-gray-200 group-hover:bg-red-900/50'}`}></div>
+                    <div className="relative pl-6 md:pl-8 border-l border-gray-100 group-hover:border-red-900/30 transition-colors duration-500 pb-8 md:pb-12">
+                      <div className={`absolute left-[-4.5px] md:left-[-5px] top-3 w-2 h-2 rounded-full transition-all duration-500 ${showYear ? 'bg-red-900 scale-125' : 'bg-gray-200 group-hover:bg-red-900/50'}`}></div>
                       
                       <div className="space-y-1">
-                        <h4 className="text-lg font-bold text-gray-900 uppercase tracking-tight leading-tight">
+                        <h4 className="text-base md:text-lg font-bold text-gray-900 uppercase tracking-tight leading-tight">
                           {item.event}
                         </h4>
-                        <p className="text-[9px] font-bold tracking-widest text-red-900/60 uppercase">
+                        <p className="text-[8px] md:text-[9px] font-bold tracking-widest text-red-900/60 uppercase">
                           {item.location}
                         </p>
-                        <p className="text-xs text-gray-500 font-light leading-relaxed max-w-xl mt-2">
+                        <p className="text-[11px] md:text-xs text-gray-500 font-light leading-relaxed max-w-xl mt-2">
                           {item.desc}
                         </p>
                       </div>
@@ -184,16 +185,16 @@ export default function AboutMePage() {
         </section>
 
         {/* COMPACT CONTACT CTA */}
-        <section className="relative py-16 bg-red-900 rounded-[2.5rem] text-center px-6 overflow-hidden">
+        <section className="relative py-12 md:py-16 bg-red-900 rounded-3xl md:rounded-[2.5rem] text-center px-6 overflow-hidden">
           <Camera className="absolute -left-6 -top-6 text-white/5 rotate-12" size={120} />
           <PenTool className="absolute -right-6 -bottom-6 text-white/5 -rotate-12" size={120} />
 
-          <div className="relative z-10 space-y-6">
+          <div className="relative z-10 space-y-4 md:space-y-6">
             <h2 className="text-white text-3xl md:text-5xl font-black tracking-tighter uppercase leading-none">
               Laten we iets <br />creëren.
             </h2>
             <div className="pt-2">
-              <a href="mailto:vandeneyndenthibaut@gmail.be" className="inline-flex items-center gap-3 bg-white text-red-900 px-8 py-4 rounded-full text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-500 group">
+              <a href="mailto:vandeneyndenthibaut@gmail.be" className="inline-flex items-center gap-3 bg-white text-red-900 px-6 md:px-8 py-3 md:py-4 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-500 group">
                 Stuur een bericht <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </a>
             </div>

@@ -57,7 +57,7 @@ export default function MemoryProject() {
           </Link>
 
           <h1 className="text-5xl lg:text-6xl font-bold tracking-tight text-red-900 uppercase">
-            {title}<span className="ml-1 opacity-40 animate-pulse">|</span>
+            {title}<span className="ml-1 opacity-40 animate-pulse">_</span>
           </h1>
 
           <div className="w-24 h-1 bg-red-900 mt-6 mb-10 origin-left animate-expand"></div>

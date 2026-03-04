@@ -3,7 +3,7 @@
 import { useState } from "react"
 import SidebarSlider from "@/components/SidebarSlider"
 import { GiHamburgerMenu } from "react-icons/gi"
-import { FiChevronDown, FiLock, FiArrowRight } from "react-icons/fi"
+import { FiChevronDown, FiLock, FiArrowRight, FiUser, FiSettings } from "react-icons/fi"
 
 export default function GlobalNavbar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -38,8 +38,11 @@ export default function GlobalNavbar() {
           setIsProjectOpen(false)
         }}
       >
-        <nav className="flex flex-col h-full py-8 px-2">
-          {/* Hoofdnavigatie */}
+        <nav className="flex flex-col h-full py-8 px-4">
+          
+          {/* BOVENSTE GEDEELTE: Navigatie links */}
+          {/* De 'grow' class zorgt ervoor dat dit blok alle beschikbare ruimte inneemt, 
+              waardoor de div hieronder (de knoppen) naar de bodem wordt geduwd. */}
           <div className="flex flex-col space-y-6 text-sm font-bold uppercase tracking-[0.3em] grow">
             <a href="/home" className="hover:text-red-900 transition-colors flex items-center justify-between group">
               Home <FiArrowRight className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
@@ -71,21 +74,38 @@ export default function GlobalNavbar() {
               )}
             </div>
 
-            <a href="/studenten" className="hover:text-red-900 transition-colors flex items-center justify-between group">
+           {/* <a href="/studenten" className="hover:text-red-900 transition-colors flex items-center justify-between group">
               Class of '26 <FiArrowRight className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
-            </a>
+            </a> */}
             <a href="/contact" className="hover:text-red-900 transition-colors flex items-center justify-between group">
               Contact <FiArrowRight className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
             </a>
           </div>
 
-          {/* Footer van de Sidebar */}
-          <div className="pt-8 border-t border-gray-50 mt-auto">
-             <a 
+          {/* ONDERSTE GEDEELTE: De 3 knoppen */}
+          <div className="mt-auto pt-8 border-t border-gray-100 space-y-3">
+            {/* Admin & User knoppen naast elkaar */}
+            <div className="grid grid-cols-2 gap-3">
+              <a 
+                href="/admin" 
+                className="flex items-center justify-center gap-2 py-3 bg-gray-50 text-gray-900 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all border border-transparent"
+              >
+                <FiSettings size={12} /> Admin
+              </a>
+              <a 
+                href="/userlandingspage" 
+                className="flex items-center justify-center gap-2 py-3 bg-gray-50 text-gray-900 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all border border-transparent"
+              >
+                <FiUser size={12} /> User
+              </a>
+            </div>
+
+            {/* Inloggen knop (Helemaal onderaan) */}
+            <a 
               href="/login" 
-              className="flex items-center justify-center gap-2 w-full py-4 bg-gray-50 text-gray-900 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-red-900 hover:text-white transition-all shadow-inner"
+              className="flex items-center justify-center gap-2 w-full py-4 bg-red-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-lg shadow-red-900/10"
             >
-              Inloggen
+              <FiLock size={14} /> Inloggen
             </a>
           </div>
         </nav>

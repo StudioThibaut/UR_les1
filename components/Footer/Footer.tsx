@@ -38,7 +38,7 @@ export default function Footer() {
 
           {/* MIDDEN: Copyright (Desktop) */}
           <div className="hidden lg:flex justify-center order-2 text-white/40 text-[10px] tracking-widest uppercase pb-1">
-            &copy; {currentYear} — Studio Thibaut
+            &copy; {currentYear} — Thibaut Vanden Eynden
           </div>
 
           {/* RECHTS: Juridische links */}

@@ -359,7 +359,7 @@ export default function UltimateProjectPage() {
 
           {/* FIX: Absolute footer onderaan de drawer met krachtige schaduw */}
           <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-100 shadow-[0_-20px_40px_rgba(255,255,255,1)] z-1000">
-             <button onClick={() => window.open('/enquete', '_blank')} className="w-full py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest border-2 border-red-900 text-red-900 hover:bg-red-50 transition-all flex items-center justify-center gap-2 group mb-3">
+             <button onClick={() => window.open('https://forms.gle/yzFqSPJKMJvbK4nbA', '_blank')} className="w-full py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest border-2 border-red-900 text-red-900 hover:bg-red-50 transition-all flex items-center justify-center gap-2 group mb-3">
                <ClipboardList size={16} className="group-hover:rotate-12 transition-transform" /> Naar Enquête
              </button>
              

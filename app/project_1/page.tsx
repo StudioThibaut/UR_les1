@@ -10,14 +10,14 @@ ONTWERP A: JOUW ORIGINELE CODE (RESPONSIVE)
 ========================================== */ 
 const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => (
   <div className="animate-fadeIn">
-    <div className="fixed top-0 left-0 h-1 bg-red-900 z-[110] transition-all duration-150 ease-out" style={{ width: `${scrollProgress}%` }} />
-    <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-12 md:py-24 space-y-16 md:space-y-32">
+    <div className="fixed top-0 left-0 h-1 bg-red-900 z-110 transition-all duration-150 ease-out" style={{ width: `${scrollProgress}%` }} />
+    <div className="max-w-350 mx-auto px-6 lg:px-12 py-12 md:py-24 space-y-16 md:space-y-32">
       <section className="max-w-5xl">
         <Link href="/portfolio" className="inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors mb-8 md:mb-12 group">
           <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">Terug naar portfolio</span>
         </Link>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-red-900 uppercase break-words">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-red-900 uppercase wrap-break-word">
           {title}<span className="ml-1 opacity-40 animate-pulse"></span>
         </h1>
         <div className="w-20 md:w-24 h-1 bg-red-900 mt-4 md:mt-6 mb-8 md:mb-10 origin-left animate-expand"></div>
@@ -77,7 +77,7 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => (
       </section>
 
       <section className="space-y-4 md:space-y-6">
-        <div className="relative w-full aspect-[4/3] md:aspect-[21/9] rounded-xl md:rounded-[2rem] overflow-hidden shadow-2xl border border-gray-100">
+        <div className="relative w-full aspect-4/3 md:aspect-21/9 rounded-xl md:rounded-[2rem] overflow-hidden shadow-2xl border border-gray-100">
           <Image src="/IMG/Fotografie_Leporello.jpg" alt="Leporello" fill className="object-cover" priority />
         </div>
         <p className="text-center text-gray-400 text-[10px] md:text-xs uppercase tracking-[0.3em]">Overzicht van de tactiele leporello-vouw</p>
@@ -90,7 +90,7 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => (
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8">
           {images.map((img: string, i: number) => (
-            <div key={i} className="group relative aspect-[3/4] rounded-xl md:rounded-2xl overflow-hidden shadow-lg cursor-zoom-in" onClick={() => setLightboxImage(img)}>
+            <div key={i} className="group relative aspect-3/4 rounded-xl md:rounded-2xl overflow-hidden shadow-lg cursor-zoom-in" onClick={() => setLightboxImage(img)}>
               <Image src={img} alt="Detail" fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" />
               <div className="absolute inset-0 bg-red-900/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all"><ZoomIn className="text-white" size={24} /></div>
             </div>
@@ -106,14 +106,14 @@ ONTWERP B: INDUSTRIAL WHITE (BRUTALIST GRID RESPONSIVE)
 ========================================== */ 
 const DesignB = ({ images, title, setLightboxImage, scrollProgress }: any) => (
   <div className="animate-fadeIn bg-[#ffffff] min-h-screen text-[#1a1a1a] font-mono selection:bg-yellow-400 selection:text-black">
-    <div className="fixed top-0 left-0 h-1 bg-yellow-400 z-[110] transition-all duration-150 ease-out" style={{ width: `${scrollProgress}%` }} />
-    <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-12 md:py-24 relative">
-      <header className="mb-20 md:mb-48 border-l-[8px] md:border-l-[12px] border-black pl-6 md:pl-10">
+    <div className="fixed top-0 left-0 h-1 bg-yellow-400 z-110 transition-all duration-150 ease-out" style={{ width: `${scrollProgress}%` }} />
+    <div className="max-w-350 mx-auto px-4 md:px-6 py-12 md:py-24 relative">
+      <header className="mb-20 md:mb-48 border-l-8 md:border-l-12 border-black pl-6 md:pl-10">
         <Link href="/portfolio" className="inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors mb-8 md:mb-12 group">
           <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase italic">Terug naar portfolio</span>
         </Link>
-        <h1 className="text-4xl sm:text-6xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter text-black mb-8 break-words">
+        <h1 className="text-4xl sm:text-6xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter text-black mb-8 wrap-break-word">
           {title}
         </h1>
         <div className="inline-block bg-yellow-400 px-3 py-2 md:px-4 md:py-2 text-sm sm:text-xl lg:text-2xl font-black uppercase italic leading-tight">
@@ -153,7 +153,7 @@ const DesignB = ({ images, title, setLightboxImage, scrollProgress }: any) => (
 
           <section className="mb-20 md:mb-32 space-y-6 md:space-y-8">
             <div className="h-1 md:h-2 w-full bg-black mb-6 md:mb-8" />
-            <div className="relative w-full aspect-[4/3] md:aspect-[21/9] border-[6px] md:border-[12px] border-black overflow-hidden group">
+            <div className="relative w-full aspect-4/3 md:aspect-21/9 border-[6px] md:border-12 border-black overflow-hidden group">
               <Image src="/IMG/Fotografie_Leporello.jpg" alt="Leporello Brutalist" fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" />
             </div>
             <div className="flex justify-between items-center text-[8px] md:text-[10px] font-black uppercase tracking-widest text-black italic">
@@ -201,7 +201,7 @@ const DesignB = ({ images, title, setLightboxImage, scrollProgress }: any) => (
         <div className="h-2 md:h-4 w-full bg-black mb-8 md:mb-12" />
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
           {images.map((img: string, i: number) => (
-            <div key={i} className="relative aspect-[3/4] bg-white overflow-hidden group border-2 border-black cursor-pointer" onClick={() => setLightboxImage(img)}>
+            <div key={i} className="relative aspect-3/4 bg-white overflow-hidden group border-2 border-black cursor-pointer" onClick={() => setLightboxImage(img)}>
               <Image src={img} alt="Gallery" fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
               <div className="absolute bottom-0 right-0 bg-black text-white text-[8px] md:text-[10px] font-black px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity uppercase italic">
                 IMG_0{i+1}
@@ -253,7 +253,7 @@ export default function ProjectFotografie() {
   return (
     <main className="min-h-screen bg-white relative pb-24 md:pb-0">
       {/* Design Switcher - Verbeterd voor mobiel (smaller en gecentreerd) */}
-      <div className="fixed bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-[300] flex bg-black/90 backdrop-blur-xl p-1 md:p-1.5 rounded-2xl border border-white/20 shadow-2xl transition-all hover:scale-105 w-[280px] md:w-auto">
+      <div className="fixed bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-300 flex bg-black/90 backdrop-blur-xl p-1 md:p-1.5 rounded-2xl border border-white/20 shadow-2xl transition-all hover:scale-105 w-70 md:w-auto">
         <button onClick={() => setActiveDesign('A')} className={`flex-1 md:flex-none px-6 md:px-8 py-3 rounded-xl text-[9px] md:text-[10px] font-black tracking-widest uppercase transition-all ${activeDesign === 'A' ? 'bg-red-900 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}>Design A</button>
         <button onClick={() => setActiveDesign('B')} className={`flex-1 md:flex-none px-6 md:px-8 py-3 rounded-xl text-[9px] md:text-[10px] font-black tracking-widest uppercase transition-all ${activeDesign === 'B' ? 'bg-yellow-400 text-black shadow-lg' : 'text-white/40 hover:text-white'}`}>Design B</button>
       </div>
@@ -266,8 +266,8 @@ export default function ProjectFotografie() {
 
       {/* Lightbox - Verbeterd voor mobiel */}
       {lightboxImage && (
-        <div className="fixed inset-0 bg-black/98 z-[400] flex items-center justify-center p-4 cursor-pointer" onClick={() => setLightboxImage(null)}>
-          <button className="absolute top-4 right-4 md:top-8 md:right-8 text-white/50 hover:text-white p-2"><X size={32} className="md:w-[40px] md:h-[40px]" /></button>
+        <div className="fixed inset-0 bg-black/98 z-400 flex items-center justify-center p-4 cursor-pointer" onClick={() => setLightboxImage(null)}>
+          <button className="absolute top-4 right-4 md:top-8 md:right-8 text-white/50 hover:text-white p-2"><X size={32} className="md:w-10 md:h-10" /></button>
           <div className="relative w-full h-[70vh] md:h-full max-w-5xl max-h-[85vh]">
             <Image src={lightboxImage} alt="Fullscreen" fill className="object-contain" />
           </div>

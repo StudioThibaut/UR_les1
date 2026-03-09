@@ -21,7 +21,7 @@ export default function NotFound() {
 
   return (
     <main className="min-h-screen bg-white flex items-center justify-center px-6 selection:bg-red-900 selection:text-white">
-      <div className="max-w-[1400px] w-full text-center space-y-12">
+      <div className="max-w-350 w-full text-center space-y-12">
         
         {/* VISUEEL ELEMENT */}
         <div className="flex flex-col items-center space-y-8">
@@ -29,7 +29,7 @@ export default function NotFound() {
             {/* Een subtiel draaiend kompas icoon */}
             <Compass size={100} className="text-red-900/10 animate-[spin_12s_linear_infinite]" />
             <div className="absolute inset-0 flex items-center justify-center">
-               <span className="text-9xl font-black text-red-900/[0.03] select-none tracking-tighter">404</span>
+               <span className="text-9xl font-black text-red-900/3 select-none tracking-tighter">404</span>
             </div>
           </div>
 

@@ -3,14 +3,42 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { motion } from "framer-motion"
+import { FiChevronLeft, FiChevronRight, FiArrowRight } from "react-icons/fi"
+
+// 1. DEFINIEER HET TYPE VOOR EEN PROJECT (Lost de TS-fouten op)
+interface Project {
+  title: string;
+  image: string;
+  link: string;
+  tag: string;
+}
+
+// ALLE PROJECTEN DATA
+const allProjects: Project[] = [
+  { title: "FOTOGRAFIE", image: "/IMG/Fotografie_Leporello.jpg", link: "/project_1", tag: "Visual Arts" },
+  { title: "STAGE T-SHIRT", image: "/IMG/T-shirt_Stage.jpg", link: "/project_2", tag: "Branding" },
+  { title: "IGNITION", image: "/IMG/Ignition3.jpg", link: "/project_3", tag: "Digital Design" },
+]
 
 export default function HomePage() {
   const fullLastName = "VANDEN EYNDEN"
   const [lastName, setLastName] = useState("")
   const [scrollProgress, setScrollProgress] = useState(0)
+  
+  // Voeg <Project[]> toe aan de useState om TypeScript te vertellen wat erin komt
+  const [projects, setProjects] = useState<Project[]>([]) 
+  const [currentIndex, setCurrentIndex] = useState(0)
 
-  // 1. TYPING EFFECT LOGIC
+  // 2. RANDOMIZER LOGIC
+  useEffect(() => {
+    const shuffled = [...allProjects]
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3)
+    setProjects(shuffled)
+  }, [])
+
+  // 3. TYPING EFFECT LOGIC
   useEffect(() => {
     let index = 0
     const interval = setInterval(() => {
@@ -21,24 +49,24 @@ export default function HomePage() {
     return () => clearInterval(interval)
   }, [])
 
-  // 3. SLIDER LOGIC
-  const projects = [
-    { title: "FOTOGRAFIE", image: "/IMG/Fotografie_Leporello.jpg", link: "/project_1" },
-    { title: "STAGE T-SHIRT", image: "/IMG/T-shirt_Stage.jpg", link: "/project_2" },
-    { title: "IGNITION", image: "/IMG/Ignition3.jpg", link: "/project_3" },
-  ]
-
-  const [currentIndex, setCurrentIndex] = useState(0)
-
-  const nextSlide = () => setCurrentIndex((prev) => (prev === projects.length - 1 ? 0 : prev + 1))
-  const prevSlide = () => setCurrentIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1))
+  // 4. SLIDER NAVIGATIE
+  const nextSlide = () => {
+    if (projects.length === 0) return
+    setCurrentIndex((prev) => (prev === projects.length - 1 ? 0 : prev + 1))
+  }
+  
+  const prevSlide = () => {
+    if (projects.length === 0) return
+    setCurrentIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1))
+  }
 
   useEffect(() => {
+    if (projects.length === 0) return
     const interval = setInterval(nextSlide, 5000)
     return () => clearInterval(interval)
-  }, [currentIndex])
+  }, [currentIndex, projects])
 
-  // 2. SCROLL PROGRESS LOGIC
+  // 5. SCROLL PROGRESS LOGIC
   useEffect(() => {
     const updateScrollProgress = () => {
       const currentScrollY = window.scrollY
@@ -46,17 +74,19 @@ export default function HomePage() {
       const progress = (currentScrollY / scrollHeight) * 100
       setScrollProgress(progress)
     }
-
     window.addEventListener("scroll", updateScrollProgress)
     return () => window.removeEventListener("scroll", updateScrollProgress)
   }, [])
 
+  // Belangrijk voor TypeScript: check of projects geladen zijn
+  if (projects.length === 0) return null
+
   return (
-    <main className="relative flex flex-col items-center min-h-screen bg-white overflow-x-hidden font-sans">
+    <main className="relative flex flex-col items-center min-h-screen bg-white overflow-x-hidden font-sans selection:bg-red-900 selection:text-white">
       
       {/* SCROLL PROGRESS BAR */}
       <div 
-        className="fixed top-0 left-0 h-1 bg-red-900 z-100 transition-all duration-150 ease-out"
+        className="fixed top-0 left-0 h-1 bg-red-900 z-110 transition-all duration-150 ease-out"
         style={{ width: `${scrollProgress}%` }}
       />
 
@@ -93,82 +123,96 @@ export default function HomePage() {
           </div>
         </div>
         
-        {/* SCROLL INDICATOR */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30 animate-bounce sm:flex">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30 animate-bounce">
           <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Scroll</span>
-          <div className="w-px8 bg-gray-900"></div>
+          <div className="w-px h-8 bg-gray-900"></div>
         </div>
       </section>
 
       {/* PROJECT SLIDER SECTION */}
-      <section className="max-w-7xl w-full px-6 lg:px-12 py-12 md:py-20 relative">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 md:mb-12 gap-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-red-900 uppercase tracking-tighter">
-            Mijn projecten
-          </h2>
-          <div className="flex gap-4">
-            <button onClick={prevSlide} className="p-2 md:p-3 border border-red-900/20 rounded-full hover:bg-red-900 hover:text-white transition-all active:scale-95">
-              <ChevronLeft size={20} className="md:w-6 md:h-6" />
+      <section className="w-full max-w-400 mx-auto px-6 py-24">
+        <div className="flex justify-between items-end mb-12 px-2">
+          <div className="space-y-2">
+            
+            <Link href="/portfolio" className="group relative inline-flex items-center gap-6">
+              <div className="relative">
+                <h2 className="text-4xl md:text-6xl font-black text-gray-900 uppercase tracking-tighter leading-none transition-colors group-hover:text-red-900">
+                  Mijn projecten
+                </h2>
+                <span className="absolute -bottom-2 left-0 w-full h-1.5 bg-red-900 origin-left scale-x-[0.3] transition-transform duration-500 ease-out group-hover:scale-x-100" />
+              </div>
+              <FiArrowRight size={40} className="text-red-900 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 hidden md:block" />
+            </Link>
+
+          </div>
+          <div className="flex gap-2">
+            <button onClick={prevSlide} className="p-4 md:p-6 border border-gray-100 rounded-2xl hover:bg-black hover:text-white transition-all shadow-sm active:scale-90">
+              <FiChevronLeft size={24} />
             </button>
-            <button onClick={nextSlide} className="p-2 md:p-3 border border-red-900/20 rounded-full hover:bg-red-900 hover:text-white transition-all active:scale-95">
-              <ChevronRight size={20} className="md:w-6 md:h-6" />
+            <button onClick={nextSlide} className="p-4 md:p-6 bg-black text-white rounded-2xl hover:bg-red-900 transition-all shadow-xl active:scale-90">
+              <FiChevronRight size={24} />
             </button>
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl md:rounded-[2rem] shadow-2xl bg-gray-50 aspect-4/5 sm:aspect-video md:h-150">
-          <div
-            className="flex h-full transition-transform duration-1000 cubic-bezier(0.4, 0, 0.2, 1)"
+        <div className="relative overflow-hidden rounded-[2rem] md:rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.07)] bg-gray-50 aspect-4/5 md:aspect-21/9">
+          <div 
+            className="flex h-full transition-transform duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)]" 
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
             {projects.map((project, index) => (
-              <Link key={index} href={project.link} className="min-w-full h-full relative group overflow-hidden">
-                <Image
-                  src={project.image}
-                  alt={`Project ${project.title}`}
-                  fill
-                  className="object-cover transition duration-700 group-hover:scale-105"
-                  sizes="(max-width: 1280px) 100vw, 1280px"
+              <Link key={index} href={project.link} className="min-w-full h-full relative group">
+                <Image 
+                  src={project.image} 
+                  alt={project.title} 
+                  fill 
+                  className="object-cover transition-transform duration-[3s] group-hover:scale-110" 
+                  priority={index === 0} 
+                  sizes="100vw"
                 />
-                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 md:p-12">
-                  <h3 className="text-white text-3xl md:text-5xl font-bold tracking-tight transform translate-y-0 sm:translate-y-4 sm:group-hover:translate-y-0 transition-transform duration-500">
+                <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/10 to-transparent flex flex-col justify-end p-8 md:p-20">
+                  <span className="text-red-900 font-mono text-xs mb-4">/ 0{index + 1}</span>
+                  <h3 className="text-white text-4xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-4">
                     {project.title}
                   </h3>
-                  <p className="text-white/70 mt-2 font-medium text-sm md:text-base">Klik om project te bekijken →</p>
+                  <div className="flex items-center gap-4">
+                    <span className="px-3 py-1 border border-white/20 rounded-full text-[9px] text-white font-bold uppercase tracking-widest">
+                      {project.tag}
+                    </span>
+                    <p className="text-white/40 font-bold text-[10px] uppercase tracking-widest group-hover:text-white transition-colors">
+                      View Project —
+                    </p>
+                  </div>
                 </div>
               </Link>
             ))}
           </div>
         </div>
 
-        {/* SLIDER DOTS NAVIGATION */}
-        <div className="flex justify-center gap-3 mt-8">
+        <div className="flex justify-center items-center gap-4 mt-12">
           {projects.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`h-2 transition-all duration-300 rounded-full ${
-                currentIndex === index 
-                ? "w-8 bg-red-900" 
-                : "w-2 bg-gray-300 hover:bg-red-900/40"
+              className={`h-1 transition-all duration-500 rounded-full ${
+                currentIndex === index ? "w-12 bg-red-900" : "w-4 bg-gray-200"
               }`}
-              aria-label={`Ga naar slide ${index + 1}`}
             />
           ))}
         </div>
       </section>
 
       {/* OVER MIJ TEASER SECTION */}
-      <section className="max-w-3xl w-full px-6 py-16 md:py-24 text-center border-t border-gray-100">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-red-900 uppercase tracking-tighter">De Ontwerper</h2>
-        <p className="text-gray-700 text-lg md:text-xl leading-relaxed font-light px-2">
-          Ik ben <span className="font-bold">Thibaut Vanden Eynden</span>, een creatieve grafisch ontwerper gespecialiseerd in branding, fotografie en visuele communicatie. Mijn stijl combineert esthetiek met een sterk concept, waarbij elk project een uniek verhaal vertelt.
+      <section className="max-w-4xl w-full px-6 py-20 md:py-32 text-center border-t border-gray-100 mb-20">
+        <h2 className="text-3xl md:text-4xl font-bold mb-8 text-red-900 uppercase tracking-tighter">De Ontwerper</h2>
+        <p className="text-gray-700 text-xl md:text-3xl leading-tight font-light px-2">
+          Ik ben <span className="font-bold">Thibaut Vanden Eynden</span>, een creatieve grafisch ontwerper gespecialiseerd in branding, fotografie en visuele communicatie. Mijn stijl combineert esthetiek met een sterk concept.
         </p>
         <Link
           href="/over_mij"
-          className="mt-8 md:mt-10 inline-block text-red-900 font-bold border-b-2 border-red-900 pb-1 hover:text-black hover:border-black transition-all"
+          className="mt-12 inline-flex items-center gap-3 text-red-900 font-bold border-b-2 border-red-900 pb-2 text-lg hover:text-black hover:border-black transition-all group mx-auto w-fit"
         >
-          Ontdek mijn verhaal
+          Ontdek mijn verhaal <FiArrowRight className="group-hover:translate-x-2 transition-transform" />
         </Link>
       </section>
 

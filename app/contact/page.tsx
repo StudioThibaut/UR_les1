@@ -86,11 +86,11 @@ export default function ContactForm() {
       
       {/* SCROLL PROGRESS BAR */}
       <div 
-        className="fixed top-0 left-0 h-1 bg-red-900 z-[100] transition-all duration-150 ease-out"
+        className="fixed top-0 left-0 h-1 bg-red-900 z-100 transition-all duration-150 ease-out"
         style={{ width: `${scrollProgress}%` }}
       />
 
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-12 md:py-24 space-y-12 md:space-y-20">
+      <div className="max-w-350 mx-auto px-6 lg:px-12 py-12 md:py-24 space-y-12 md:space-y-20">
 
         {/* HEADER SECTION */}
         <header className="max-w-4xl">
@@ -157,7 +157,7 @@ export default function ContactForm() {
                     <Textarea 
                       rows={5} 
                       {...register("message")} 
-                      className="bg-white border-none rounded-xl md:rounded-[1.5rem] p-5 md:p-6 shadow-sm focus-visible:ring-red-900 resize-none min-h-[150px] md:min-h-[200px]" 
+                      className="bg-white border-none rounded-xl md:rounded-[1.5rem] p-5 md:p-6 shadow-sm focus-visible:ring-red-900 resize-none min-h-37.5 md:min-h-50" 
                       placeholder="Vertel me over je project..." 
                     />
                     {errors.message && <p className="text-[10px] text-red-500 mt-1 ml-1">{errors.message.message}</p>}

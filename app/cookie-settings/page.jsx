@@ -44,7 +44,7 @@ export default function CookieSettings() {
       
       {/* SUCCESS MELDING */}
       {status && (
-        <div className="fixed top-6 md:top-10 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-4 duration-300 w-[90%] md:w-auto">
+        <div className="fixed top-6 md:top-10 left-1/2 -translate-x-1/2 z-100 animate-in fade-in slide-in-from-top-4 duration-300 w-[90%] md:w-auto">
           <div className="bg-black text-white px-6 md:px-8 py-4 rounded-2xl flex items-center justify-center md:justify-start gap-4 shadow-2xl border border-white/10">
             <CheckCircle2 size={18} className="text-red-600 shrink-0" />
             <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em]">{status}</span>
@@ -52,7 +52,7 @@ export default function CookieSettings() {
         </div>
       )}
 
-      <div className="max-w-[1100px] mx-auto px-6 lg:px-12 py-12 md:py-24">
+      <div className="max-w-275 mx-auto px-6 lg:px-12 py-12 md:py-24">
         
         <Link href="/home" className="inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors mb-12 md:mb-16 group text-[10px] font-bold uppercase tracking-[0.2em]">
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />

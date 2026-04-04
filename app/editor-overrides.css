@@ -1,0 +1,59 @@
+/* app/editor-overrides.css
+  Dit bestand koppelt de Visual Editor aan je HTML. 
+  Door 'initial' of een fallback toe te voegen, blijft je eigen ontwerp 
+  staan totdat je de sliders gebruikt.
+*/
+
+h1 {
+  /* Gebruik de editor-font, anders 'inherit' (neem over van globals.css) */
+  font-family: var(--h1-font, inherit) !important;
+  font-size: var(--h1-size, inherit) !important;
+  font-weight: var(--h1-weight, inherit) !important;
+  text-align: var(--h1-align, inherit) !important;
+  color: var(--h1-color, inherit) !important;
+  text-transform: var(--h1-transform, inherit) !important;
+  margin-top: var(--h1-mt, inherit) !important;
+  margin-bottom: var(--h1-mb, inherit) !important;
+  padding-top: var(--h1-pt, inherit) !important;
+  padding-bottom: var(--h1-pb, inherit) !important;
+  opacity: var(--h1-opacity, inherit) !important;
+}
+
+h2 { 
+  font-family: var(--h2-font, inherit) !important; 
+  font-size: var(--h2-size, inherit) !important; 
+  color: var(--h2-color, inherit) !important; 
+}
+
+h3 { 
+  font-family: var(--h3-font, inherit) !important; 
+  font-size: var(--h3-size, inherit) !important; 
+  color: var(--h3-color, inherit) !important; 
+}
+
+p {
+  font-family: var(--p-font, inherit) !important;
+  font-size: var(--p-size, inherit) !important;
+  color: var(--p-color, inherit) !important;
+  text-align: var(--p-align, inherit) !important;
+  margin-bottom: var(--p-mb, inherit) !important;
+}
+
+button {
+  font-family: var(--button-font, inherit) !important;
+  font-size: var(--button-size, inherit) !important;
+  background-color: var(--button-backgroundColor, inherit) !important;
+  color: var(--button-color, inherit) !important;
+}
+
+ol, li {
+  font-family: var(--ol-font, inherit) !important;
+  font-size: var(--ol-size, inherit) !important;
+  color: var(--ol-color, inherit) !important;
+}
+
+body {
+  /* Alleen de achtergrondkleur aanpassen als de variabele bestaat */
+  background-color: var(--background, initial) !important;
+  letter-spacing: var(--editor-letter-spacing, inherit) !important;
+}

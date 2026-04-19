@@ -5,17 +5,13 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Send, Mail, MapPin, ArrowLeft } from "lucide-react"
-import Link from "next/link"
+import { Send, Mail, MapPin } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-
-/* ---------------- SCHEMA ---------------- */
 
 const contactSchema = z.object({
   name: z.string().min(2, "Naam moet minstens 2 tekens bevatten"),
@@ -26,43 +22,32 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>
 
-export default function ContactForm() {
+export default function ContactPage() {
   const [loading, setLoading] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [displayedTitle, setDisplayedTitle] = useState("")
-  
-  const title = "CONTACT"
+  const fullTitle = "CONTACT"
 
-  /* TYPEWRITER EFFECT */
   useEffect(() => {
     let index = 0
     const interval = setInterval(() => {
-      setDisplayedTitle(title.slice(0, index + 1))
+      setDisplayedTitle(fullTitle.slice(0, index + 1))
       index++
-      if (index === title.length) clearInterval(interval)
+      if (index === fullTitle.length) clearInterval(interval)
     }, 150)
     return () => clearInterval(interval)
-  }, [title])
-
-  /* SCROLL PROGRESS LOGIC */
-  useEffect(() => {
-    const updateScrollProgress = () => {
-      const currentScrollY = window.scrollY
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
-      const progress = (currentScrollY / scrollHeight) * 100
-      setScrollProgress(progress > 0 ? progress : 0)
-    }
-
-    window.addEventListener("scroll", updateScrollProgress)
-    return () => window.removeEventListener("scroll", updateScrollProgress)
   }, [])
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<ContactFormValues>({
+  useEffect(() => {
+    const update = () => {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
+      setScrollProgress((window.scrollY / scrollHeight) * 100)
+    }
+    window.addEventListener("scroll", update)
+    return () => window.removeEventListener("scroll", update)
+  }, [])
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: { name: "", email: "", subject: "", message: "" },
   })
@@ -74,7 +59,7 @@ export default function ContactForm() {
       console.log("Form data:", data)
       toast.success("Bericht succesvol verzonden!")
       reset()
-    } catch (error) {
+    } catch {
       toast.error("Er is iets misgegaan. Probeer het later opnieuw.")
     } finally {
       setLoading(false)
@@ -82,107 +67,162 @@ export default function ContactForm() {
   }
 
   return (
-    <main className="min-h-screen bg-white text-gray-900 selection:bg-red-900 selection:text-white relative overflow-x-hidden">
-      
-      {/* SCROLL PROGRESS BAR */}
-      <div 
-        className="fixed top-0 left-0 h-1 bg-red-900 z-100 transition-all duration-150 ease-out"
+    <main className="min-h-screen bg-white text-gray-900 selection:bg-red-900 selection:text-white relative overflow-x-hidden font-sans">
+
+      <div
+        className="fixed top-0 left-0 h-1 bg-red-900 z-50 transition-all duration-300 ease-out"
         style={{ width: `${scrollProgress}%` }}
       />
 
-      <div className="max-w-350 mx-auto px-6 lg:px-12 py-12 md:py-24 space-y-12 md:space-y-20">
+      <section className="min-h-[60vh] flex flex-col justify-end px-6 md:px-16 lg:px-24 pt-32 pb-20 border-b border-gray-100 relative">
+        <div className="absolute top-12 right-6 md:right-16 text-right space-y-1">
+          <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900">Beschikbaar</p>
+          <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-gray-400">Antwerpen, BE</p>
+        </div>
 
-        {/* HEADER SECTION */}
-        <header className="max-w-4xl">
-          <Link href="/home" className="inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors mb-8 md:mb-12 group">
-            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">Terug naar home</span>
-          </Link>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-red-900 uppercase leading-tight">
-            {displayedTitle}<span className="ml-1 opacity-40 animate-pulse"></span>
-          </h1>
+        <p className="text-[10px] md:text-xs font-bold tracking-[0.4em] uppercase text-red-900 mb-6">
+          Thibaut Vanden Eynden
+        </p>
 
-          <div className="w-20 md:w-24 h-1 bg-red-900 mt-4 md:mt-6 mb-6 md:mb-10 origin-left animate-expand"></div>
-        </header>
+        <h1 className="text-[clamp(4rem,12vw,10rem)] font-black uppercase tracking-tighter leading-[0.85] text-gray-900 mb-10">
+          {displayedTitle}<span className="opacity-30 animate-pulse">_</span>
+        </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
-          
-          {/* CONTACT INFO */}
-          <div className="space-y-8 md:space-y-12 order-2 lg:order-1">
-            <div className="space-y-6">
-              <h3 className="text-[10px] md:text-sm font-bold uppercase tracking-[0.3em] text-red-900">Contactgegevens</h3>
+        <div className="w-20 h-0.5 bg-red-900 mb-12 origin-left animate-expand" />
+
+        <p className="text-gray-400 max-w-xl text-lg md:text-2xl leading-relaxed font-light italic">
+          "Heb je een project in gedachten? Ik luister graag — vertel me over je idee."
+        </p>
+      </section>
+
+      <section className="px-6 md:px-16 lg:px-24 py-28 md:py-40">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
+
+          <div className="lg:col-span-4">
+            <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-4">Contactgegevens</p>
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-gray-900 leading-none mb-16">
+              Neem contact op.
+            </h2>
+
+            <div>
               <div className="space-y-4">
-                <a href="mailto:vandeneyndenthibaut@gmail.be" className="flex items-center gap-4 text-gray-600 hover:text-red-900 transition-colors group">
-                  <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-900/10 transition-colors shrink-0">
-                    <Mail size={18} />
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-red-900/5 rounded-lg">
+                    <Mail size={18} className="text-red-900" />
                   </div>
-                  <span className="text-base md:text-lg break-all">vandeneyndenthibaut@gmail.be</span>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Email</h3>
+                </div>
+                <a
+                  href="mailto:vandeneyndenthibaut@gmail.be" 
+                  className="block font-black text-base md:text-xl uppercase tracking-tight text-gray-900 hover:text-red-900 transition-colors break-all font-oswald"
+                >
+                  vandeneyndenthibaut@gmail.be
                 </a>
-                <div className="flex items-center gap-4 text-gray-600">
-                  <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
-                    <MapPin size={18} />
-                  </div>
-                  <span className="text-base md:text-lg">Antwerpen, België</span>
+              </div>
+
+              <div className="border-t border-gray-100 py-8">
+                <div className="flex items-center gap-2 text-red-900 mb-2">
+                  <MapPin size={18} />
+                  <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400">Locatie</p>
+                </div>
+                <p className="font-black text-base uppercase tracking-tight text-gray-900">
+                  Antwerpen, België
+                </p>
+              </div>
+
+              <div className="border-t border-gray-100 pt-10">
+                <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
+                  <p className="text-[10px] font-black tracking-widest uppercase text-red-900 mb-3">Beschikbaarheid</p>
+                  <p className="text-gray-500 font-light text-sm leading-relaxed italic">
+                    Momenteel beschikbaar voor nieuwe projecten en samenwerkingen. Reactietijd: binnen 24 uur.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* FORMULIER */}
-          <div className="lg:col-span-2 order-1 lg:order-2 opacity-0 animate-fadeIn">
-            <Card className="border-none bg-gray-50 rounded-3xl md:rounded-[2.5rem] overflow-hidden shadow-2xl shadow-red-900/5">
-              <CardContent className="p-6 md:p-8 lg:p-12">
-                <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6 md:gap-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                    <div className="space-y-2">
-                      <Label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Naam</Label>
-                      <Input {...register("name")} className="bg-white border-none rounded-xl md:rounded-2xl h-12 md:h-14 px-5 md:px-6 shadow-sm focus-visible:ring-red-900" placeholder="Jouw naam" />
-                      {errors.name && <p className="text-[10px] text-red-500 mt-1 ml-1">{errors.name.message}</p>}
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Email</Label>
-                      <Input type="email" {...register("email")} className="bg-white border-none rounded-xl md:rounded-2xl h-12 md:h-14 px-5 md:px-6 shadow-sm focus-visible:ring-red-900" placeholder="naam@voorbeeld.be" />
-                      {errors.email && <p className="text-[10px] text-red-500 mt-1 ml-1">{errors.email.message}</p>}
-                    </div>
-                  </div>
+          <div className="lg:col-span-8 space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Naam</Label>
+                <Input
+                  {...register("name")}
+                  placeholder="Jouw naam"
+                  className="bg-gray-50 border border-gray-100 rounded-2xl h-14 px-6 text-sm font-light focus-visible:ring-red-900 focus-visible:border-red-900 placeholder:text-gray-300 transition-all"
+                />
+                {errors.name && (
+                  <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{errors.name.message}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Email</Label>
+                <Input
+                  type="email"
+                  {...register("email")}
+                  placeholder="naam@voorbeeld.be"
+                  className="bg-gray-50 border border-gray-100 rounded-2xl h-14 px-6 text-sm font-light focus-visible:ring-red-900 focus-visible:border-red-900 placeholder:text-gray-300 transition-all"
+                />
+                {errors.email && (
+                  <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{errors.email.message}</p>
+                )}
+              </div>
+            </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Onderwerp</Label>
-                    <Input {...register("subject")} className="bg-white border-none rounded-xl md:rounded-2xl h-12 md:h-14 px-5 md:px-6 shadow-sm focus-visible:ring-red-900" placeholder="Waar gaat het over?" />
-                    {errors.subject && <p className="text-[10px] text-red-500 mt-1 ml-1">{errors.subject.message}</p>}
-                  </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Onderwerp</Label>
+              <Input
+                {...register("subject")}
+                placeholder="Waar gaat het over?"
+                className="bg-gray-50 border border-gray-100 rounded-2xl h-14 px-6 text-sm font-light focus-visible:ring-red-900 focus-visible:border-red-900 placeholder:text-gray-300 transition-all"
+              />
+              {errors.subject && (
+                <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{errors.subject.message}</p>
+              )}
+            </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Bericht</Label>
-                    <Textarea 
-                      rows={5} 
-                      {...register("message")} 
-                      className="bg-white border-none rounded-xl md:rounded-[1.5rem] p-5 md:p-6 shadow-sm focus-visible:ring-red-900 resize-none min-h-37.5 md:min-h-50" 
-                      placeholder="Vertel me over je project..." 
-                    />
-                    {errors.message && <p className="text-[10px] text-red-500 mt-1 ml-1">{errors.message.message}</p>}
-                  </div>
-                  <Button disabled={loading} className="w-full bg-red-900 hover:bg-black text-white rounded-xl md:rounded-2xl h-14 md:h-16 font-bold uppercase tracking-[0.2em] text-[10px] md:text-sm transition-all flex gap-3 group">
-                    {loading ? "Versturen..." : (
-                      <>
-                        Verstuur bericht
-                        <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Bericht</Label>
+              <Textarea
+                rows={7}
+                {...register("message")}
+                placeholder="Vertel me over je project..."
+                className="bg-gray-50 border border-gray-100 rounded-2xl p-6 text-sm font-light focus-visible:ring-red-900 focus-visible:border-red-900 placeholder:text-gray-300 resize-none transition-all"
+              />
+              {errors.message && (
+                <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{errors.message.message}</p>
+              )}
+            </div>
+
+            <Button
+              disabled={loading}
+              onClick={handleSubmit(onSubmit)}
+              className="w-full bg-red-900 hover:bg-gray-900 text-white rounded-full h-16 font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-xl shadow-red-900/20 flex items-center justify-center gap-3 group"
+            >
+              {loading ? (
+                <span className="opacity-60">Versturen...</span>
+              ) : (
+                <>
+                  Verstuur bericht
+                  <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </>
+              )}
+            </Button>
           </div>
-
         </div>
-      </div>
+      </section>
 
-      <style jsx>{`
-        @keyframes expand { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        .animate-expand { animation: expand 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-fadeIn { animation: fadeIn 1s ease-out forwards 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      <style jsx global>{`
+        @keyframes expand {
+          from { transform: scaleX(0); }
+          to { transform: scaleX(1); }
+        }
+        .animate-expand {
+          animation: expand 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          transform-origin: left;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #991b1b; border-radius: 10px; }
       `}</style>
     </main>
   )

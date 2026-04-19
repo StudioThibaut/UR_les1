@@ -11,6 +11,7 @@ const rawProjects = [
   { t: "Fotografie", h: "/project_1" },
   { t: "Ignition", h: "/project_3" },
   { t: "Stage T-shirt", h: "/project_2" },
+  { t: "Tegen Dementie", h: "/project_4" },
 ]
 
 export default function GlobalNavbar() {

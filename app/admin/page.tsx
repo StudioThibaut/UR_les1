@@ -1,205 +1,154 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useEffect, useMemo } from "react"
-import { 
-  ArrowLeft, X, Palette, Printer, Users, 
-  Save, History, Settings, Smartphone, Tablet, Monitor,
-  Check, Zap, Box, EyeOff, AlertCircle, ClipboardList, ExternalLink
+import { useState, useEffect } from "react"
+import {
+  X, Palette, Printer, Users,
+  Save, Settings, Smartphone, Tablet, Monitor,
+  ClipboardList, Plus, Trash2
 } from "lucide-react"
 
-/* ==========================================
-   INTERFACES & TYPES
-   ========================================== */
 interface CoreValue {
-  label: string;
-  vs: string;
+  label: string
+  vs: string
 }
 
 interface ProjectLabels {
-  label1: string;
-  label2: string;
-  label3: string;
+  label1: string
+  label2: string
+  label3: string
 }
 
 interface ProjectData {
-  title: string;
-  subtitle: string;
-  client: string;
-  expertise: string;
-  status: string;
-  isPublished: boolean;
-  slug: string;
-  surveyUrl: string; // Nieuw: dynamische link voor de enquête
-  labels: ProjectLabels;
-  description: string;
-  techText: string;
-  processText: string;
-  images: string[];
-  coreValues: CoreValue[];
+  title: string
+  subtitle: string
+  client: string
+  expertise: string
+  status: string
+  isPublished: boolean
+  slug: string
+  surveyUrl: string
+  labels: ProjectLabels
+  description: string
+  techText: string
+  processText: string
+  images: string[]
+  coreValues: CoreValue[]
 }
 
-/* ==========================================
-   ONTWERP A: CLEAN RESPONSIVE
-   ========================================== */
-const DesignA = ({ data, setLightboxImage, scrollProgress }: { data: ProjectData, setLightboxImage: any, scrollProgress: number }) => (
-  <div className="animate-fadeIn w-full overflow-x-hidden pb-20">
-    <div className="fixed top-0 left-0 h-1.5 bg-red-900 z-110 transition-all duration-300 ease-out shadow-[0_2px_10px_rgba(153,27,27,0.3)]" style={{ width: `${scrollProgress}%` }} />
-    <div className="max-w-7xl mx-auto px-6 lg:px-12 py-10 md:py-24 space-y-12 md:space-y-32">
-      <section className="max-w-5xl">
-        <div className="inline-flex items-center gap-2 text-gray-400 mb-6 md:mb-12 hover:text-red-900 transition-colors cursor-pointer group">
-          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-[10px] font-black tracking-[0.2em] uppercase">Terug naar portfolio</span>
-        </div>
-        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-red-900 uppercase leading-[0.9] mb-4 wrap-break-word">
-          {data.title || "Project Titel"}
-        </h1>
-        <div className="w-20 md:w-40 h-2 bg-red-900 mt-4 md:mt-8 mb-8 origin-left"></div>
-        
+const DesignA = ({ data, scrollProgress }: { data: ProjectData, scrollProgress: number }) => (
+  <div className="w-full overflow-x-hidden pb-20 bg-white">
+    <div className="fixed top-0 left-0 h-1 bg-red-900 z-60 transition-all duration-300 ease-out" style={{ width: `${scrollProgress}%` }} />
+
+    {/* Hero */}
+    <section className="min-h-[70vh] flex flex-col justify-end px-6 md:px-16 lg:px-24 pt-24 pb-20 border-b border-gray-100">
+      <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-6">
+        {data.client || "Klant"} · {data.expertise || "Expertise"}
+      </p>
+      <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.85] text-gray-900 mb-8">
+        {data.title || "Project Titel"}
+      </h1>
+      <div className="w-20 h-0.5 bg-red-900 mb-10 origin-left" />
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <p className="text-lg md:text-2xl text-gray-400 font-light italic max-w-2xl leading-relaxed">
+          "{data.subtitle || "Voeg hier een inspirerende ondertitel toe."}"
+        </p>
         {data.surveyUrl && (
-          <a href={data.surveyUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-red-900 text-white px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-black transition-all shadow-lg mb-10">
-            <ClipboardList size={14} /> Naar Enquête
+          <a
+            href={data.surveyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-red-900 text-white rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-gray-900 transition-all duration-300 shadow-xl shadow-red-900/20 shrink-0"
+          >
+            <ClipboardList size={14} /> Naar enquête
           </a>
         )}
+      </div>
+    </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16 border-t border-gray-100 pt-8 md:pt-12">
-          <div className="md:col-span-2">
-            <p className="text-xl sm:text-2xl md:text-4xl text-gray-800 leading-tight font-light italic tracking-tight">
-              "{data.subtitle || "Voeg hier een inspirerende ondertitel toe."}"
-            </p>
+    {/* Projectinfo */}
+    <section className="px-6 md:px-16 lg:px-24 py-20 border-b border-gray-100">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+        {[
+          { label: "Klant", value: data.client || "—" },
+          { label: "Expertise", value: data.expertise || "—" },
+          { label: "Status", value: data.status || "—" },
+        ].map((item, i) => (
+          <div key={i} className="py-8 md:py-0 md:px-12 first:md:pl-0 last:md:pr-0">
+            <p className="text-[10px] font-black tracking-[0.4em] uppercase text-red-900 mb-2">{item.label}</p>
+            <p className="font-black text-xl uppercase tracking-tight text-gray-900">{item.value}</p>
           </div>
-          <div className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-gray-400 space-y-4 md:space-y-6 md:border-l border-gray-100 md:pl-10">
-            <div><span className="text-red-900 font-black block mb-1">Klant</span> <span className="text-gray-600">{data.client || "Naam klant"}</span></div>
-            <div><span className="text-red-900 font-black block mb-1">Expertise</span> <span className="text-gray-600">{data.expertise || "Vakgebied"}</span></div>
-            <div><span className="text-red-900 font-black block mb-1">Status</span> <span className="text-gray-600">{data.status || "Status"}</span></div>
-          </div>
-        </div>
-      </section>
+        ))}
+      </div>
+    </section>
 
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-24">
-        <div className="lg:col-span-8 space-y-16 md:space-y-24 text-gray-700 font-light leading-relaxed text-base md:text-xl">
+    {/* Tekst + aside */}
+    <section className="px-6 md:px-16 lg:px-24 py-28 md:py-40 border-b border-gray-100">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-24">
+        <div className="lg:col-span-8 space-y-0">
           {[
-            { icon: <Palette size={24}/>, label: data.labels.label1, text: data.description },
-            { icon: <Printer size={24}/>, label: data.labels.label2, text: data.techText },
-            { icon: <Users size={24}/>, label: data.labels.label3, text: data.processText, style: "italic" }
-          ].map((item: any, idx) => (
-            <div key={idx} className="space-y-4 md:space-y-6 group">
-              <div className="flex items-center gap-4 text-red-900">
-                <div className="p-2 md:p-3 bg-red-50 rounded-xl md:rounded-2xl">{item.icon}</div>
-                <h2 className="text-xl md:text-3xl font-black uppercase tracking-tighter">{item.label}</h2>
+            { icon: <Palette size={20} />, tag: "Concept", title: data.labels.label1, body: data.description },
+            { icon: <Printer size={20} />, tag: "Realisatie", title: data.labels.label2, body: data.techText },
+            { icon: <Users size={20} />, tag: "Resultaat", title: data.labels.label3, body: data.processText },
+          ].map((s, i) => (
+            <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start border-t border-gray-100 py-14">
+              <div className="md:col-span-4">
+                <div className="flex items-center gap-3 text-red-900 mb-2">
+                  {s.icon}
+                  <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400">{s.tag}</p>
+                </div>
+                <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-gray-900">{s.title}</h3>
               </div>
-              <p className={`whitespace-pre-line border-l-2 border-gray-100 pl-6 md:pl-8 ${item.style || ''}`}>
-                {item.text || "Schrijf hier de inhoud voor dit onderdeel..."}
-              </p>
+              <div className="md:col-span-8 text-gray-500 font-light leading-relaxed text-base md:text-lg whitespace-pre-line">
+                {s.body || <span className="text-gray-300 italic">Nog geen inhoud...</span>}
+              </div>
             </div>
           ))}
         </div>
-        <aside className="lg:col-span-4 self-start bg-white p-8 md:p-12 rounded-[2rem] md:rounded-[3.5rem] border border-gray-100 shadow-xl lg:sticky lg:top-24">
-          <h3 className="font-black text-red-900 text-[10px] tracking-[0.4em] uppercase text-center mb-8">Core DNA</h3>
-          <ul className="space-y-6 md:space-y-8 font-black text-gray-900 uppercase tracking-tighter text-xl md:text-2xl italic">
-            {data.coreValues.map((v, i) => (
-              <li key={i} className="flex justify-between items-center border-b border-gray-50 pb-4 last:border-0">
-                <span className="text-gray-800 text-sm md:text-xl">{v.label}</span> 
-                <span className="text-red-900/20 text-[9px] font-black not-italic px-2 py-1 bg-gray-50 rounded-full mx-2">VS</span> 
-                <span className="text-red-900 text-sm md:text-xl">{v.vs}</span>
-              </li>
-            ))}
-          </ul>
-        </aside>
-      </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
-        {data.images.map((img, idx) => (
-          <div key={idx} className={`relative overflow-hidden rounded-[1.5rem] md:rounded-[4rem] shadow-xl border border-gray-100 bg-gray-50 flex items-center justify-center ${idx === 0 ? 'md:col-span-2 aspect-video' : 'aspect-square'}`}>
-             <span className="text-gray-300 uppercase font-black text-[10px] tracking-widest">Image Placeholder</span>
-             {img && <Image src={img} alt="Project" fill className="object-cover" />}
-          </div>
-        ))}
-      </section>
-    </div>
-  </div>
-)
-
-/* ==========================================
-   ONTWERP B: INDUSTRIAL DARK
-   ========================================== */
-const DesignB = ({ data, setLightboxImage }: { data: ProjectData, setLightboxImage: any }) => (
-  <div className="bg-[#0f0f0f] text-white min-h-screen animate-fadeIn font-mono w-full overflow-x-hidden pb-20">
-    <div className="border-b border-white/10 p-6 md:p-16 relative overflow-hidden pt-24">
-      <div className="absolute top-0 right-0 text-[25vw] font-black text-white/5 leading-none pointer-events-none uppercase">DNA</div>
-      <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="flex items-center gap-3 text-amber-500 mb-6">
-          <div className="h-px w-12 bg-amber-500" />
-          <span className="text-[10px] font-bold tracking-widest uppercase">{data.status || "STATUS"}</span>
-        </div>
-        <h1 className="text-4xl sm:text-6xl md:text-9xl font-black uppercase tracking-tighter leading-[0.8] mb-8 wrap-break-word">
-          {data.title || "PROJECT TITEL"}
-        </h1>
-        {data.surveyUrl && (
-          <a href={data.surveyUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-4 border border-amber-500 text-amber-500 px-8 py-4 mb-8 font-bold uppercase text-xs tracking-widest hover:bg-amber-500 hover:text-black transition-all">
-            <Zap size={18} fill="currentColor" /> NAAR ENQUÊTE <ExternalLink size={14} />
-          </a>
-        )}
-        <p className="max-w-2xl text-lg md:text-2xl text-gray-400 font-light border-l-4 border-amber-500 pl-6 py-1">
-          {data.subtitle || "Ondertitel komt hier."}
-        </p>
-      </div>
-    </div>
-
-    <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 border-x border-white/10">
-      <aside className="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-white/10 p-10 space-y-12 bg-[#151515]">
-        <div>
-          <h3 className="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-6">Specs</h3>
-          <div className="space-y-4">
-            <div><span className="text-gray-500 block text-[9px] uppercase mb-1">Klant</span> <span className="text-sm font-bold uppercase">{data.client || "-"}</span></div>
-            <div><span className="text-gray-500 block text-[9px] uppercase mb-1">Expertise</span> <span className="text-sm font-bold uppercase">{data.expertise || "-"}</span></div>
-          </div>
-        </div>
-        <div>
-          <h3 className="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-6">Core DNA</h3>
-          <div className="space-y-3">
-            {data.coreValues.map((v, i) => (
-              <div key={i} className="flex justify-between items-center text-[11px] font-bold border-b border-white/5 pb-2">
-                <span className="text-white uppercase">{v.label}</span>
-                <span className="text-amber-500 italic">VS</span>
-                <span className="text-white uppercase">{v.vs}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </aside>
-
-      <main className="lg:col-span-8 p-6 md:p-16 space-y-16 md:space-y-24">
-        {[
-          { label: data.labels.label1, text: data.description, icon: <Box size={18}/> },
-          { label: data.labels.label2, text: data.techText, icon: <Zap size={18}/> },
-          { label: data.labels.label3, text: data.processText, icon: <Users size={18}/> }
-        ].map((item, idx) => (
-          <section key={idx} className="space-y-4 md:space-y-6">
-            <div className="flex items-center gap-3 text-amber-500">
-              {item.icon}
-              <h2 className="text-lg md:text-xl font-black uppercase tracking-[0.2em]">{item.label}</h2>
+        <aside className="lg:col-span-4">
+          <div className="lg:sticky lg:top-8 bg-gray-50 rounded-3xl p-10 border border-gray-100 space-y-6">
+            <p className="text-[10px] font-black tracking-[0.4em] uppercase text-red-900 border-b border-gray-200 pb-4">Core DNA</p>
+            <div className="space-y-3">
+              {data.coreValues.map((v, i) => (
+                <div key={i} className="grid grid-cols-3 items-center border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                  <span className="font-black text-sm uppercase tracking-tight text-gray-900">{v.label}</span>
+                  <span className="text-center text-[10px] font-black text-red-900/30">VS</span>
+                  <span className="font-black text-sm uppercase tracking-tight text-gray-400 text-right">{v.vs}</span>
+                </div>
+              ))}
             </div>
-            <p className="text-gray-400 leading-relaxed text-sm md:text-base whitespace-pre-line border-l border-white/5 pl-6">
-              {item.text || "Inhoud komt hier..."}
-            </p>
-          </section>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    {/* Galerij */}
+    <section className="px-6 md:px-16 lg:px-24 py-28 md:py-40">
+      <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-4">Galerij</p>
+      <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-gray-900 mb-16">Visueel overzicht.</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {data.images.map((img, idx) => (
+          <div
+            key={idx}
+            className={`relative overflow-hidden rounded-3xl bg-gray-50 border border-gray-100 flex items-center justify-center ${idx === 0 ? 'md:col-span-2 aspect-video' : 'aspect-square'}`}
+          >
+            {img
+              ? <Image src={img} alt="Project" fill className="object-cover" />
+              : <p className="text-gray-300 uppercase font-black text-[10px] tracking-widest">Afbeelding {idx + 1}</p>
+            }
+          </div>
         ))}
-      </main>
-    </div>
+      </div>
+    </section>
   </div>
 )
 
-/* ==========================================
-   MAIN COMPONENT
-   ========================================== */
-export default function UltimateProjectPage() {
-  const [activeDesign, setActiveDesign] = useState<'A' | 'B'>('A')
+export default function AdminProjectPage() {
   const [isEditMode, setIsEditMode] = useState(false)
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
-  const [lastSaved, setLastSaved] = useState<string>("Lege template")
+  const [lastSaved, setLastSaved] = useState("Nog niet opgeslagen")
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   const emptyData: ProjectData = {
@@ -210,7 +159,7 @@ export default function UltimateProjectPage() {
     status: "CONCEPT",
     isPublished: false,
     slug: "nieuw-project",
-    surveyUrl: "https://forms.gle/yzFqSPJKMJvbK4nbA", // Default link
+    surveyUrl: "https://forms.gle/yzFqSPJKMJvbK4nbA",
     labels: { label1: "CONCEPT", label2: "REALISATIE", label3: "RESULTAAT" },
     description: "",
     techText: "",
@@ -220,7 +169,7 @@ export default function UltimateProjectPage() {
       { label: "Waarde 1", vs: "Contrast 1" },
       { label: "Waarde 2", vs: "Contrast 2" },
       { label: "Waarde 3", vs: "Contrast 3" },
-      { label: "Waarde 4", vs: "Contrast 4" }
+      { label: "Waarde 4", vs: "Contrast 4" },
     ]
   }
 
@@ -228,10 +177,7 @@ export default function UltimateProjectPage() {
 
   useEffect(() => {
     const saved = localStorage.getItem('project_data_cache')
-    if (saved) {
-      setProjectData(JSON.parse(saved))
-      setLastSaved("Data hersteld")
-    }
+    if (saved) { setProjectData(JSON.parse(saved)); setLastSaved("Data hersteld") }
   }, [])
 
   const updateProject = (updates: Partial<ProjectData>) => {
@@ -248,131 +194,289 @@ export default function UltimateProjectPage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight
-      if (totalHeight > 0) setScrollProgress((window.scrollY / totalHeight) * 100)
+      const el = document.getElementById('preview-scroll')
+      if (!el) return
+      const total = el.scrollHeight - el.clientHeight
+      if (total > 0) setScrollProgress((el.scrollTop / total) * 100)
     }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    const el = document.getElementById('preview-scroll')
+    el?.addEventListener('scroll', handleScroll)
+    return () => el?.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
-    <main className={`min-h-screen bg-[#F8F8F8] relative flex font-sans ${isEditMode ? 'overflow-hidden' : ''}`}>
-      
-      {/* EDITOR SIDEBAR */}
-      <div className={`fixed inset-y-0 left-0 z-999 w-full sm:w-125 bg-white border-r border-gray-100 shadow-2xl transition-all duration-700 ease-in-out transform ${isEditMode ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="h-full flex flex-col overflow-hidden">
-          <div className="p-8 flex items-center justify-between border-b">
-            <h2 className="text-2xl font-black uppercase text-red-900 italic tracking-tighter">Project Editor</h2>
-            <button onClick={() => setIsEditMode(false)} className="p-3 hover:bg-red-50 rounded-2xl text-red-900 transition-all"><X size={24} /></button>
+    <main className="min-h-screen bg-white relative flex font-sans overflow-hidden">
+
+      {/* ── EDITOR SIDEBAR ── */}
+      <div className={`fixed inset-y-0 left-0 z-50 w-full md:w-120 bg-white border-r border-gray-100 shadow-2xl transition-transform duration-500 transform ${isEditMode ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="h-full flex flex-col">
+
+          {/* Sidebar header */}
+          <div className="px-10 pt-10 pb-8 border-b border-gray-100 flex items-end justify-between shrink-0">
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-2">Beheer</p>
+              <h2 className="text-3xl font-black uppercase tracking-tighter leading-none text-gray-900">
+                Project<br />Editor.
+              </h2>
+              <div className="flex items-center gap-2 mt-3">
+                <div className={`w-1.5 h-1.5 rounded-full ${hasUnsavedChanges ? 'bg-amber-400' : 'bg-green-500'}`} />
+                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                  {hasUnsavedChanges ? 'Niet opgeslagen' : lastSaved}
+                </p>
+              </div>
+            </div>
+            <button onClick={() => setIsEditMode(false)} className="p-3 border border-gray-100 rounded-full hover:bg-red-900 hover:border-red-900 hover:text-white transition-all duration-300">
+              <X size={16} />
+            </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-8 space-y-10 pb-40 custom-scrollbar">
-            {/* LINKS & URLS */}
-            <section className="p-6 bg-red-50/50 rounded-[2rem] border border-red-100 space-y-6">
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-red-900 tracking-widest">Enquête URL</label>
-                <input value={projectData.surveyUrl} onChange={(e) => updateProject({ surveyUrl: e.target.value })} className="w-full bg-white p-3 rounded-xl text-xs border border-red-100 outline-none focus:border-red-900" placeholder="https://forms.gle/..." />
+          {/* Sidebar content */}
+          <div className="flex-1 overflow-y-auto px-10 py-8 space-y-12 pb-32">
+
+            <section className="space-y-4">
+              <div>
+                <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-1">Links</p>
+                <h3 className="text-lg font-black uppercase tracking-tighter text-gray-900">Enquête & Slug.</h3>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-red-900 tracking-widest">Slug</label>
-                <input value={projectData.slug} onChange={(e) => updateProject({ slug: e.target.value })} className="w-full bg-white p-3 rounded-xl text-xs border border-red-100 outline-none focus:border-red-900" />
+              <div className="space-y-0">
+                {[
+                  { label: "Enquête URL", value: projectData.surveyUrl, key: "surveyUrl", placeholder: "https://forms.gle/..." },
+                  { label: "Slug", value: projectData.slug, key: "slug", placeholder: "project-naam" },
+                ].map((field, i) => (
+                  <div key={i} className="border-t border-gray-100 py-5">
+                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 block mb-2">{field.label}</label>
+                    <input
+                      value={field.value}
+                      onChange={(e) => updateProject({ [field.key]: e.target.value })}
+                      placeholder={field.placeholder}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-light focus:border-red-900/20 focus:bg-white transition-all outline-none"
+                    />
+                  </div>
+                ))}
               </div>
             </section>
 
-            {/* BASIS INFO */}
-            <section className="space-y-6">
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-red-900">Project Titel</label>
-                <input value={projectData.title} onChange={(e) => updateProject({ title: e.target.value })} className="w-full bg-gray-50 p-4 rounded-xl font-bold text-xs border border-transparent focus:border-red-900 focus:bg-white outline-none" placeholder="Titel..." />
+            <section className="space-y-4">
+              <div>
+                <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-1">Metadata</p>
+                <h3 className="text-lg font-black uppercase tracking-tighter text-gray-900">Basisinformatie.</h3>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-red-900">Ondertitel</label>
-                <textarea value={projectData.subtitle} onChange={(e) => updateProject({ subtitle: e.target.value })} className="w-full bg-gray-50 p-4 rounded-xl text-xs border border-transparent focus:border-red-900 focus:bg-white outline-none" rows={2} placeholder="Korte omschrijving..." />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-red-900">Klant</label>
-                  <input value={projectData.client} onChange={(e) => updateProject({ client: e.target.value })} className="w-full bg-gray-50 p-3 rounded-xl text-[11px] border border-transparent focus:border-red-900 focus:bg-white outline-none" placeholder="Naam klant..." />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-red-900">Expertise</label>
-                  <input value={projectData.expertise} onChange={(e) => updateProject({ expertise: e.target.value })} className="w-full bg-gray-50 p-3 rounded-xl text-[11px] border border-transparent focus:border-red-900 focus:bg-white outline-none" placeholder="Bijv. Design..." />
+              <div className="space-y-0">
+                {[
+                  { label: "Project titel", value: projectData.title, key: "title", placeholder: "Titel..." },
+                  { label: "Klant", value: projectData.client, key: "client", placeholder: "Naam klant..." },
+                  { label: "Expertise", value: projectData.expertise, key: "expertise", placeholder: "Bijv. Design..." },
+                  { label: "Status", value: projectData.status, key: "status", placeholder: "CONCEPT / LIVE..." },
+                ].map((field, i) => (
+                  <div key={i} className="border-t border-gray-100 py-5">
+                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 block mb-2">{field.label}</label>
+                    <input
+                      value={field.value}
+                      onChange={(e) => updateProject({ [field.key]: e.target.value })}
+                      placeholder={field.placeholder}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-light focus:border-red-900/20 focus:bg-white transition-all outline-none"
+                    />
+                  </div>
+                ))}
+                <div className="border-t border-gray-100 py-5">
+                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 block mb-2">Ondertitel</label>
+                  <textarea
+                    value={projectData.subtitle}
+                    onChange={(e) => updateProject({ subtitle: e.target.value })}
+                    placeholder="Korte omschrijving..."
+                    rows={3}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-light focus:border-red-900/20 focus:bg-white transition-all outline-none resize-none"
+                  />
                 </div>
               </div>
             </section>
 
-            {/* HOOFDSTUKKEN */}
-            <section className="space-y-6">
-              <label className="text-[10px] font-black uppercase text-red-900">Inhoud</label>
-              {[1, 2, 3].map((num) => (
-                <div key={num} className="p-4 bg-white border border-gray-100 rounded-2xl space-y-3 shadow-sm">
-                  <input 
-                    value={(projectData.labels as any)[`label${num}`]} 
-                    onChange={(e) => updateProject({ labels: {...projectData.labels, [`label${num}`]: e.target.value}})}
-                    className="bg-red-50 text-red-900 px-3 py-1.5 rounded-lg font-black uppercase text-[9px] w-full outline-none"
-                    placeholder={`Sectie ${num} Naam`}
-                  />
-                  <textarea 
-                    rows={4} 
-                    value={(projectData as any)[num === 1 ? 'description' : num === 2 ? 'techText' : 'processText']} 
-                    onChange={(e) => updateProject({ [num === 1 ? 'description' : num === 2 ? 'techText' : 'processText']: e.target.value })}
-                    className="w-full text-[11px] leading-relaxed outline-none resize-none"
-                    placeholder="Voer tekst in..."
-                  />
+            <section className="space-y-4">
+              <div>
+                <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-1">Inhoud</p>
+                <h3 className="text-lg font-black uppercase tracking-tighter text-gray-900">Tekst secties.</h3>
+              </div>
+              <div className="space-y-4">
+                {[1, 2, 3].map((num) => (
+                  <div key={num} className="border border-gray-100 rounded-2xl p-5 space-y-3">
+                    <input
+                      value={(projectData.labels as any)[`label${num}`]}
+                      onChange={(e) => updateProject({ labels: { ...projectData.labels, [`label${num}`]: e.target.value } })}
+                      className="w-full text-[10px] font-black uppercase tracking-widest text-red-900 bg-transparent border-b border-gray-100 pb-2 outline-none"
+                      placeholder={`Sectie ${num} naam`}
+                    />
+                    <textarea
+                      rows={5}
+                      value={(projectData as any)[num === 1 ? 'description' : num === 2 ? 'techText' : 'processText']}
+                      onChange={(e) => updateProject({ [num === 1 ? 'description' : num === 2 ? 'techText' : 'processText']: e.target.value })}
+                      placeholder="Voer tekst in..."
+                      className="w-full px-0 py-2 text-sm font-light text-gray-600 leading-relaxed outline-none resize-none bg-transparent"
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <div className="flex items-end justify-between">
+                <div>
+                  <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-1">Spanningsvelden</p>
+                  <h3 className="text-lg font-black uppercase tracking-tighter text-gray-900">Core DNA.</h3>
                 </div>
-              ))}
+                <button
+                  onClick={() => updateProject({ coreValues: [...projectData.coreValues, { label: "", vs: "" }] })}
+                  className="p-2.5 border border-gray-100 rounded-full hover:bg-red-900 hover:border-red-900 hover:text-white transition-all duration-300"
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+              <div className="space-y-2">
+                {projectData.coreValues.map((v, i) => (
+                  <div key={i} className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-center border-t border-gray-100 pt-3">
+                    <input
+                      value={v.label}
+                      onChange={(e) => {
+                        const updated = [...projectData.coreValues]
+                        updated[i] = { ...updated[i], label: e.target.value }
+                        updateProject({ coreValues: updated })
+                      }}
+                      placeholder="Label"
+                      className="px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-light outline-none focus:border-red-900/20"
+                    />
+                    <span className="text-[10px] font-black text-red-900/30 text-center">VS</span>
+                    <input
+                      value={v.vs}
+                      onChange={(e) => {
+                        const updated = [...projectData.coreValues]
+                        updated[i] = { ...updated[i], vs: e.target.value }
+                        updateProject({ coreValues: updated })
+                      }}
+                      placeholder="Contrast"
+                      className="px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-light outline-none focus:border-red-900/20"
+                    />
+                    <button
+                      onClick={() => updateProject({ coreValues: projectData.coreValues.filter((_, idx) => idx !== i) })}
+                      className="p-1.5 text-gray-300 hover:text-red-600 transition-colors"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <div>
+                <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-1">Media</p>
+                <h3 className="text-lg font-black uppercase tracking-tighter text-gray-900">Afbeeldingen.</h3>
+              </div>
+              <div className="space-y-2">
+                {projectData.images.map((img, idx) => (
+                  <div key={idx} className="flex gap-2 items-center border-t border-gray-100 pt-3">
+                    <input
+                      value={img}
+                      onChange={(e) => {
+                        const updated = [...projectData.images]
+                        updated[idx] = e.target.value
+                        updateProject({ images: updated })
+                      }}
+                      placeholder={`/IMG/foto-${idx + 1}.jpg`}
+                      className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-xs font-light outline-none focus:border-red-900/20"
+                    />
+                    <button
+                      onClick={() => updateProject({ images: projectData.images.filter((_, i) => i !== idx) })}
+                      className="p-1.5 text-gray-300 hover:text-red-600 transition-colors"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => updateProject({ images: [...projectData.images, ""] })}
+                  className="w-full py-3 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 hover:text-red-900 hover:border-red-900/30 transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase mt-2"
+                >
+                  <Plus size={13} /> Afbeelding toevoegen
+                </button>
+              </div>
             </section>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-8 bg-white border-t border-gray-100">
-             <button onClick={handleSave} disabled={!hasUnsavedChanges} className={`w-full py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all ${hasUnsavedChanges ? 'bg-red-900 text-white shadow-xl hover:bg-black' : 'bg-gray-100 text-gray-300'}`}>
-               <Save size={16} className="inline mr-2"/> Opslaan
-             </button>
+          {/* Save */}
+          <div className="px-10 py-6 border-t border-gray-100 shrink-0">
+            <button
+              onClick={handleSave}
+              disabled={!hasUnsavedChanges}
+              className={`w-full py-4 rounded-full font-black uppercase text-[10px] tracking-widest transition-all duration-300 flex items-center justify-center gap-2 ${
+                hasUnsavedChanges
+                  ? 'bg-red-900 text-white hover:bg-gray-900 shadow-xl shadow-red-900/20'
+                  : 'bg-gray-100 text-gray-300 cursor-not-allowed'
+              }`}
+            >
+              <Save size={14} />
+              {hasUnsavedChanges ? 'Opslaan' : 'Geen wijzigingen'}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* PREVIEW AREA */}
-      <div className={`flex-1 transition-all duration-700 flex flex-col min-h-screen ${isEditMode ? 'lg:ml-125 pointer-events-none' : 'ml-0'}`}>
-        <div className="h-20 bg-transparent flex items-center justify-between px-10 absolute top-0 left-0 right-0 z-40">
-           <div className="hidden md:flex bg-white/20 backdrop-blur-md p-1.5 rounded-2xl items-center shadow-lg border border-white/30">
-             <button onClick={() => setPreviewDevice('mobile')} className={`p-2 rounded-xl transition-all ${previewDevice === 'mobile' ? 'bg-white text-red-900 shadow-sm' : 'text-gray-400'}`}><Smartphone size={18}/></button>
-             <button onClick={() => setPreviewDevice('tablet')} className={`p-2 rounded-xl transition-all ${previewDevice === 'tablet' ? 'bg-white text-red-900 shadow-sm' : 'text-gray-400'}`}><Tablet size={18}/></button>
-             <button onClick={() => setPreviewDevice('desktop')} className={`p-2 rounded-xl transition-all ${previewDevice === 'desktop' ? 'bg-white text-red-900 shadow-sm' : 'text-gray-400'}`}><Monitor size={18}/></button>
-           </div>
-           
-           <div className="flex bg-black/90 p-1.5 rounded-full shadow-2xl">
-             <button onClick={() => setActiveDesign('A')} className={`px-6 py-2 rounded-full text-[9px] font-black uppercase transition-all ${activeDesign === 'A' ? 'bg-red-900 text-white' : 'text-white/40'}`}>Modern</button>
-             <button onClick={() => setActiveDesign('B')} className={`px-6 py-2 rounded-full text-[9px] font-black uppercase transition-all ${activeDesign === 'B' ? 'bg-amber-600 text-white' : 'text-white/40'}`}>Industrial</button>
-           </div>
-        </div>
+      {/* ── PREVIEW AREA ── */}
+      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-700 ${isEditMode ? 'md:ml-120' : 'ml-0'}`}>
 
-        <div className="flex-1 bg-white flex justify-center items-start overflow-y-auto pt-24">
+        {/* Device switcher — zwevend rechtsonder het menu */}
+        {!isEditMode && (
+          <div className="fixed top-37.5 left-22.5 z-40 hidden md:flex items-center gap-1 bg-white border border-gray-200 shadow-lg p-1 rounded-full">
+            {[
+              { key: 'mobile', icon: <Smartphone size={14} /> },
+              { key: 'tablet', icon: <Tablet size={14} /> },
+              { key: 'desktop', icon: <Monitor size={14} /> },
+            ].map((d) => (
+              <button
+                key={d.key}
+                onClick={() => setPreviewDevice(d.key as any)}
+                className={`p-2 rounded-full transition-all ${previewDevice === d.key ? 'bg-red-900 text-white' : 'text-gray-400 hover:text-gray-700'}`}
+              >
+                {d.icon}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Preview container */}
+        <div
+          id="preview-scroll"
+          className="flex-1 overflow-y-auto bg-gray-50 flex justify-center"
+        >
           <div className={`transition-all duration-700 w-full ${
-            previewDevice === 'mobile' ? 'max-w-93.75 min-h-166.75 sm:rounded-[3rem] sm:border-12 border-black mb-10 shadow-2xl overflow-hidden' : 
-            previewDevice === 'tablet' ? 'max-w-3xl min-h-256 sm:rounded-[2rem] mb-10 shadow-2xl overflow-hidden' : 
-            'max-w-full min-h-full'
-          } ${isEditMode ? 'opacity-30 scale-95' : 'opacity-100 scale-100'}`}>
-            {activeDesign === 'A' ? (
-              <DesignA data={projectData} setLightboxImage={setLightboxImage} scrollProgress={scrollProgress} />
-            ) : (
-              <DesignB data={projectData} setLightboxImage={setLightboxImage} />
-            )}
+            previewDevice === 'mobile'
+              ? 'max-w-sm rounded-[3rem] border-8 border-gray-900 my-8 mx-auto shadow-2xl overflow-hidden bg-white'
+              : previewDevice === 'tablet'
+              ? 'max-w-3xl rounded-2xl my-8 mx-auto shadow-2xl overflow-hidden border border-gray-200 bg-white'
+              : 'max-w-full'
+          } ${isEditMode ? 'opacity-30 pointer-events-none grayscale scale-95' : ''}`}>
+            <DesignA data={projectData} scrollProgress={scrollProgress} />
           </div>
         </div>
       </div>
 
+      {/* Settings knop */}
       {!isEditMode && (
-        <button onClick={() => setIsEditMode(true)} className="fixed bottom-10 right-10 bg-red-900 text-white p-6 rounded-full shadow-2xl z-50 hover:scale-110 transition-all">
-          <Settings size={28} className="animate-spin-slow" />
+        <button
+          onClick={() => setIsEditMode(true)}
+          className="fixed bottom-8 right-8 w-14 h-14 bg-red-900 text-white rounded-full shadow-2xl shadow-red-900/30 z-50 hover:bg-gray-900 hover:scale-110 transition-all duration-300 flex items-center justify-center"
+        >
+          <Settings size={22} />
         </button>
       )}
 
       <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
-        .animate-spin-slow { animation: spin 10s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
       `}</style>
     </main>
   )

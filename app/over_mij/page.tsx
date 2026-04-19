@@ -2,14 +2,14 @@
 
 import Image from "next/image"
 import { useState, useEffect } from "react"
-import { ArrowUpRight, Fingerprint, Lightbulb, Terminal, Camera, PenTool, Monitor, Cpu, Layers } from "lucide-react"
+import { ArrowUpRight, Lightbulb, Terminal, Layers, Monitor, Cpu } from "lucide-react"
+import Link from "next/link"
 
 export default function AboutMePage() {
   const [title, setTitle] = useState("")
   const [scrollProgress, setScrollProgress] = useState(0)
   const fullTitle = "OVER MIJ"
 
-  // Typewriter effect
   useEffect(() => {
     let index = 0
     const interval = setInterval(() => {
@@ -20,7 +20,6 @@ export default function AboutMePage() {
     return () => clearInterval(interval)
   }, [])
 
-  // Scroll progress logic
   useEffect(() => {
     const handleScroll = () => {
       const height = document.documentElement.scrollHeight - window.innerHeight
@@ -54,139 +53,191 @@ export default function AboutMePage() {
   ]
 
   const timeline = [
-    { year: "2020", event: "Start Grafische Technieken", location: "Zenit - Turnhout", desc: "De basis gelegd voor drukwerkvoorbereiding en grafisch ontwerp." },
+    { year: "2020", event: "Start Grafische Technieken", location: "Zenit — Turnhout", desc: "De basis gelegd voor drukwerkvoorbereiding en grafisch ontwerp." },
     { year: "2024", event: "Stage Van Genechten Biermans", location: "Turnhout", desc: "Professionele ervaring in packaging design voor internationale klanten." },
-    { year: "2024", event: "Start Grafische en Digitale Media", location: "AP Hogeschool - Antwerpen", desc: "Specialisatie in digitale ervaringen en web development." },
+    { year: "2024", event: "Start Grafische en Digitale Media", location: "AP Hogeschool — Antwerpen", desc: "Specialisatie in digitale ervaringen en web development." },
     { year: "2025", event: "Studio Thibaut", location: "Vorselaar", desc: "Freelance merk gericht op fotografie en visuele branding." },
   ]
 
   return (
     <main className="min-h-screen bg-white text-gray-900 selection:bg-red-900 selection:text-white relative font-sans overflow-x-hidden">
-      
-      {/* SCROLL PROGRESS BAR */}
-      <div 
-        className="fixed top-0 left-0 h-1.5 bg-red-900 z-110 transition-all duration-300 ease-out shadow-[0_0_10px_rgba(153,27,27,0.3)]"
+
+      {/* SCROLL PROGRESS */}
+      <div
+        className="fixed top-0 left-0 h-1 bg-red-900 z-50 transition-all duration-300 ease-out"
         style={{ width: `${scrollProgress}%` }}
       />
 
-      <div className="max-w-350 mx-auto px-6 lg:px-12 py-16 md:py-32">
+      {/* ── 1. HERO ── */}
+      <section className="min-h-[70vh] flex flex-col justify-end px-6 md:px-16 lg:px-24 pt-32 pb-20 border-b border-gray-100 relative">
+        <div className="absolute top-12 right-6 md:right-16 text-right space-y-1">
+          <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900">Digital Creator</p>
+          <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-gray-400">Vorselaar, BE</p>
+        </div>
 
-        {/* HERO */}
-        <section className="mb-24 md:mb-40">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-red-900 uppercase leading-none">
-            {title}
-          </h1>
-          <div className="w-20 md:w-40 h-2 bg-red-900 mt-6 origin-left animate-expand shadow-sm"></div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mt-12 items-start">
-            <div className="md:col-span-8">
-              <p className="text-xl md:text-3xl text-gray-700 leading-tight font-light italic border-l-4 border-gray-100 pl-8">
-                "Ik geloof dat de krachtigste designs ontstaan op het snijvlak van <span className="text-gray-900 font-black not-italic">analoge precisie</span> en <span className="text-gray-900 font-black not-italic">digitale innovatie</span>."
-              </p>
-            </div>
-            <div className="md:col-span-4 space-y-4">
-               <div className="flex items-center gap-3 text-red-900 font-black uppercase text-[10px] tracking-[0.4em]">
-                  <Fingerprint size={20} /> Identity
-               </div>
-               <p className="text-[10px] text-gray-400 leading-relaxed uppercase tracking-widest font-bold">
-                  Thibaut Vanden Eynden — Digital Creator gebaseerd in Vorselaar.
-               </p>
-            </div>
-          </div>
-        </section>
+        <p className="text-[10px] md:text-xs font-bold tracking-[0.4em] uppercase text-red-900 mb-6">
+          Thibaut Vanden Eynden
+        </p>
 
-        {/* FOTO + BIO */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-32 items-center mb-40">
+        <h1 className="text-[clamp(4rem,12vw,10rem)] font-black uppercase tracking-tighter leading-[0.85] text-gray-900 mb-10">
+          {title}<span className="opacity-30 animate-pulse">_</span>
+        </h1>
+
+        <div className="w-20 h-0.5 bg-red-900 mb-12 origin-left animate-expand" />
+
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+          <p className="text-gray-400 max-w-xl text-lg md:text-2xl leading-relaxed font-light italic">
+            "Ik geloof dat de krachtigste designs ontstaan op het snijvlak van{" "}
+            <span className="text-gray-900 font-black not-italic font-oswald">analoge precisie</span>{" "}
+            en{" "}
+            <span className="text-gray-900 font-black not-italic font-oswald">digitale innovatie</span>."
+          </p>
+          <Link
+            href="/portfolio"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-red-900 text-white rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-gray-900 transition-all duration-300 shadow-xl shadow-red-900/20 shrink-0"
+          >
+            Bekijk portfolio
+            <ArrowUpRight size={14} />
+          </Link>
+        </div>
+      </section>
+
+      {/* ── 2. FOTO + BIO ── */}
+      <section className="px-6 md:px-16 lg:px-24 py-28 md:py-40 border-b border-gray-100">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24 items-center">
           <div className="relative group">
-            <div className="absolute -inset-4 border-2 border-red-900/5 rounded-[2rem] translate-x-4 translate-y-4 transition-transform duration-700"></div>
-            <div className="relative aspect-4/5 rounded-[2rem] overflow-hidden shadow-2xl bg-gray-50">
-              <Image src="/IMG/Thibaut2.jpg" alt="Thibaut" fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-[1.5s] ease-out group-hover:scale-105" priority />
+            <div className="relative aspect-4/5 rounded-3xl overflow-hidden shadow-2xl bg-gray-50">
+              <Image
+                src="/IMG/Thibaut2.jpg"
+                alt="Thibaut Vanden Eynden"
+                fill
+                className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out"
+                priority
+              />
+            </div>
+            <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-3 rounded-2xl border border-gray-100 shadow-lg">
+              <p className="text-[9px] font-black tracking-[0.3em] uppercase text-red-900">Thibaut Vanden Eynden</p>
+              <p className="text-[9px] font-light text-gray-400 uppercase tracking-widest mt-0.5">Grafisch ontwerper · Antwerpen</p>
             </div>
           </div>
-          <div className="space-y-8">
-            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-red-900 leading-none">Mijn Verhaal</h2>
-            <div className="space-y-6 text-gray-500 leading-relaxed text-lg font-light italic">
-                <p>Mijn reis begon in Turnhout, waar ik leerde dat design meer is dan alleen esthetiek; het is technisch vakmanschap.</p>
-                <p>Vandaag combineer ik die <strong>analoge basis</strong> met mijn studie aan de AP Hogeschool, waarbij ik fotografie, motion en code samenbreng tot één verhaal.</p>
-            </div>
-            <div className="grid grid-cols-2 gap-8 pt-8 border-t border-gray-100">
-              <div className="space-y-3">
-                <Lightbulb className="text-red-900" size={28} />
-                <h4 className="font-black uppercase text-[11px] tracking-[0.2em]">Conceptueel</h4>
-              </div>
-              <div className="space-y-3">
-                <Terminal className="text-red-900" size={28} />
-                <h4 className="font-black uppercase text-[11px] tracking-[0.2em]">Technisch</h4>
-              </div>
-            </div>
-          </div>
-        </section>
 
-        {/* EXPERTISE & TOOLS SECTION */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-20 border-t border-gray-100 pt-24 mb-40">
-          <div className="lg:col-span-4 space-y-12">
-            <div className="space-y-8">
-              <h3 className="text-xs font-black tracking-[0.4em] uppercase text-red-900">Disciplines</h3>
-              <div className="flex flex-wrap gap-2">
-                {disciplines.map((s) => (
-                  <span key={s} className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-lg text-[9px] font-black uppercase tracking-widest hover:border-red-900 hover:text-red-900 transition-all cursor-default">
-                    {s}
+          <div className="space-y-12">
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-4">Mijn verhaal</p>
+              <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-gray-900 leading-none mb-8 font-oswald">
+                Van Turnhout<br />naar Antwerpen.
+              </h2>
+              <div className="space-y-5 text-gray-500 leading-relaxed text-lg font-light">
+                <p>Mijn reis begon in Turnhout, waar ik leerde dat design meer is dan alleen esthetiek — het is technisch vakmanschap.</p>
+                <p>Vandaag combineer ik die <strong className="text-gray-900 font-black font-oswald">analoge basis</strong> met mijn studie aan de AP Hogeschool, waarbij ik fotografie, motion en code samenbreng tot één verhaal.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-10">
+              {[
+                { icon: <Lightbulb size={24} className="text-red-900" />, label: "Conceptueel", desc: "Elk project start met een heldere vraag en een gedragen antwoord." },
+                { icon: <Terminal size={24} className="text-red-900" />, label: "Technisch", desc: "Van eerste pixel tot laatste regel code — elk detail is een keuze." },
+              ].map((item, i) => (
+                <div key={i} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 space-y-3 hover:border-red-900/20 hover:shadow-sm transition-all">
+                  {item.icon}
+                  <h4 className="font-black text-sm uppercase tracking-tight text-gray-900 font-oswald">{item.label}</h4>
+                  <p className="text-gray-400 font-light text-xs leading-relaxed italic">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3. DISCIPLINES ── */}
+      <section className="px-6 md:px-16 lg:px-24 py-28 md:py-40 border-b border-gray-100">
+        <div className="max-w-5xl">
+          <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-4">Expertise</p>
+          <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-gray-900 leading-none mb-16 font-oswald">
+            Wat ik doe.
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            {disciplines.map((s, i) => (
+              <span
+                key={i}
+                className="px-5 py-3 bg-gray-50 border border-gray-100 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-600 hover:border-red-900 hover:text-red-900 transition-all cursor-default font-oswald"
+              >
+                {s}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. TOOLS ── */}
+      <section className="px-6 md:px-16 lg:px-24 py-28 md:py-40 border-b border-gray-100">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-4">Tech Stack</p>
+          <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-gray-900 leading-none mb-20 font-oswald">
+            Tools & Software.
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+            {toolCategories.map((cat, i) => (
+              <div key={i} className="py-10 md:py-0 md:px-12 first:md:pl-0 last:md:pr-0 space-y-8">
+                <div className="flex items-center gap-3">
+                  {cat.icon}
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-900 font-oswald">{cat.name}</h3>
+                </div>
+                <ul className="space-y-4">
+                  {cat.tools.map((tool, j) => (
+                    <li key={j} className="flex items-center gap-3 group cursor-default">
+                      <span className="w-1 h-1 rounded-full bg-red-900/30 group-hover:bg-red-900 transition-colors" />
+                      <span className="text-[11px] font-light text-gray-500 group-hover:text-gray-900 transition-colors uppercase tracking-wider font-inter">
+                        {tool}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. TIJDLIJN ── */}
+      <section className="px-6 md:px-16 lg:px-24 py-28 md:py-40 border-b border-gray-100">
+        <div className="max-w-4xl">
+          <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-4">Parcours</p>
+          <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-gray-900 leading-none mb-20 font-oswald">
+            Tijdlijn.
+          </h2>
+
+          <div className="space-y-0">
+            {timeline.map((item, i) => (
+              <div
+                key={i}
+                className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start border-t border-gray-100 py-12 group rounded-2xl px-2 -mx-2 transition-colors"
+              >
+                <div className="md:col-span-2">
+                  <span className="text-4xl md:text-5xl font-black tabular-nums text-gray-100 group-hover:text-red-900/20 transition-colors duration-500 font-oswald">
+                    {item.year}
                   </span>
-                ))}
+                </div>
+
+                <div className="md:col-span-10 flex gap-6 items-start">
+                  <div className="mt-3 shrink-0 w-2 h-2 rounded-full bg-red-900" />
+                  <div className="space-y-2">
+                    <h4 className="text-xl md:text-2xl font-black uppercase tracking-tight text-gray-900 leading-none group-hover:text-red-900 transition-colors duration-300 font-oswald">
+                      {item.event}
+                    </h4>
+                    <p className="text-[10px] font-black tracking-[0.3em] uppercase text-red-900/50">
+                      {item.location}
+                    </p>
+                    <p className="text-gray-400 font-light text-sm leading-relaxed italic pt-1">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="hidden lg:block p-8 bg-red-900 text-white rounded-[2rem] shadow-xl shadow-red-900/10">
-               <p className="text-[10px] font-black italic leading-relaxed opacity-80 uppercase tracking-widest">
-                 "Elk detail is een bewuste keuze. Van de eerste pixel tot de laatste regel code."
-               </p>
-            </div>
+            ))}
           </div>
-
-          <div className="lg:col-span-8 space-y-12">
-            <h3 className="text-xs font-black tracking-[0.4em] uppercase text-red-900">Tech Stack & Tools</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-              {toolCategories.map((cat, i) => (
-                <div key={i} className="space-y-5">
-                  <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
-                    {cat.icon}
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-900">{cat.name}</h4>
-                  </div>
-                  <ul className="space-y-3">
-                    {cat.tools.map((tool, j) => (
-                      <li key={j} className="text-[11px] font-bold text-gray-400 hover:text-red-900 transition-colors cursor-default uppercase tracking-wider flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-red-900/20 rounded-full"></span> {tool}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* TIMELINE */}
-        <section className="mb-24 border-t border-gray-100 pt-24">
-            <h3 className="text-xs font-black tracking-[0.4em] uppercase text-red-900 mb-16 text-center md:text-left">Tijdlijn</h3>
-            <div className="relative">
-              {timeline.map((item, idx) => (
-                <div key={idx} className="grid grid-cols-[80px_1fr] gap-8 group mb-12">
-                  <div className="text-2xl font-black text-gray-100 group-hover:text-red-900 transition-colors duration-500 text-right tabular-nums">{item.year}</div>
-                  <div className="relative pl-10 border-l border-gray-100 group-hover:border-red-900/30 transition-colors duration-500 pb-4">
-                    <div className="absolute left-[-5.5px] top-3 w-2.5 h-2.5 rounded-full bg-red-900"></div>
-                    <h4 className="text-xl font-black text-gray-900 uppercase tracking-tighter group-hover:italic transition-all">{item.event}</h4>
-                    <p className="text-[9px] font-black tracking-widest text-red-900/60 uppercase">{item.location}</p>
-                    <p className="text-xs text-gray-400 font-light mt-2 max-w-xl italic">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-        </section>
-      </div>
-
-      <style jsx global>{`
-        @keyframes expand { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        .animate-expand { animation: expand 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; transform-origin: left; }
-      `}</style>
+        </div>
+      </section>
     </main>
   )
 }

@@ -1,38 +1,53 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 
 export default function AutoGateway() {
   const [title, setTitle] = useState("")
   const [isExiting, setIsExiting] = useState(false)
+  const [percentage, setPercentage] = useState(0)
   const fullTitle = "THIBAUT'S PORTFOLIO"
   const router = useRouter()
 
-  // 1. TYPMISCH EFFECT
+  // 1. TYP-EFFECT (Vloeiender met willekeurige snelheden voor een organisch gevoel)
   useEffect(() => {
     let index = 0
-    const interval = setInterval(() => {
-      setTitle(fullTitle.slice(0, index + 1))
-      index++
-      if (index === fullTitle.length) clearInterval(interval)
-    }, 200) 
-    return () => clearInterval(interval)
+    let timeoutId: NodeJS.Timeout
+
+    const type = () => {
+      if (index <= fullTitle.length) {
+        setTitle(fullTitle.slice(0, index))
+        index++
+        const speed = Math.random() * 100 + 50 // Wisselende snelheid
+        timeoutId = setTimeout(type, speed)
+      }
+    }
+    
+    type()
+    return () => clearTimeout(timeoutId)
   }, [])
 
-  // 2. SLIMME REDIRECT & VOORLADEN
+  // 2. LAAD-PERCENTAGE & REDIRECT
   useEffect(() => {
     router.prefetch("/home")
 
-    const fadeTimer = setTimeout(() => {
-      setIsExiting(true)
-    }, 4200) 
+    // Percentage teller animatie
+    const interval = setInterval(() => {
+      setPercentage((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval)
+          return 100
+        }
+        return prev + 1
+      })
+    }, 40) // Synchronisatie met de 4-5 seconden laadtijd
 
-    const redirectTimer = setTimeout(() => {
-      router.push("/home")
-    }, 5000)
+    const fadeTimer = setTimeout(() => setIsExiting(true), 4200)
+    const redirectTimer = setTimeout(() => router.push("/home"), 5000)
 
     return () => {
+      clearInterval(interval)
       clearTimeout(fadeTimer)
       clearTimeout(redirectTimer)
     }
@@ -40,63 +55,79 @@ export default function AutoGateway() {
 
   return (
     <div className={`
-      flex min-h-screen items-center justify-center bg-white font-sans overflow-hidden 
-      transition-all duration-1000 ease-in-out
-      ${isExiting ? "opacity-0 scale-105" : "opacity-100 scale-100"}
+      flex min-h-screen items-center justify-center bg-white overflow-hidden 
+      transition-all duration-1500 ease-[cubic-bezier(0.23,1,0.32,1)]
+      ${isExiting ? "opacity-0 scale-110 blur-2xl" : "opacity-100 scale-100 blur-0"}
     `}>
+      
+      {/* Subtiele achtergrond grid (optioneel voor extra diepte) */}
+      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[40px_40px] opacity-20" />
 
-      <main className="flex flex-col items-center text-center px-6 relative z-10">
+      <main className="flex flex-col items-center text-center px-6 relative z-10 w-full max-w-7xl">
         
-        {/* LOGO SECTIE */}
-        <section className="relative group">
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-red-900 uppercase leading-none">
-            {title}
-            {/* HET STREEPJE IS HIER VERWIJDERD */}
-          </h1>
+        <section className="relative">
+          {/* TITEL: Hardcoded Oswald voor maximale impact */}
+          <div className="min-h-35 flex items-center justify-center">
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-red-900 uppercase leading-none font-oswald select-none">
+              {title}
+              <span className="inline-block w-1 h-[0.8em] bg-red-900 ml-2 animate-pulse align-middle" />
+            </h1>
+          </div>
           
-          <div className="w-32 h-2 bg-red-900 mt-8 mx-auto origin-left animate-expand shadow-[0_0_20px_rgba(127,29,29,0.3)]"></div>
+          {/* GEANIMEERDE LIJN: Nu met een glow effect */}
+          <div className="relative mt-8 mx-auto w-32 md:w-48">
+             <div className="w-full h-1 bg-red-900 origin-left animate-expand shadow-[0_0_25px_rgba(127,29,29,0.4)]" />
+          </div>
           
-          <div className="mt-12 space-y-2 animate-fadeIn opacity-0">
-            <p className="text-[10px] md:text-xs font-black tracking-[0.6em] text-red-900/40 uppercase">
+          {/* SUBTEXT: Gebruikt nu Inter voor strak contrast */}
+          <div className="mt-12 space-y-4 animate-fadeIn opacity-0">
+            <p className="text-[10px] md:text-xs font-medium tracking-[0.8em] text-red-900/60 uppercase font-inter">
               Visuele Verhalen Vormgeven
             </p>
-            <p className="text-[9px] md:text-[10px] font-bold tracking-[0.4em] text-gray-300 uppercase">
-              Digitaal Portfolio &copy; 2026
-            </p>
+            
+            <div className="flex items-center justify-center gap-6 text-[9px] md:text-[10px] font-bold tracking-[0.4em] text-gray-300 uppercase font-inter">
+               <span className="hover:text-red-900 transition-colors duration-500">Antwerpen, BE</span>
+               <span className="w-1 h-1 bg-gray-200 rounded-full" />
+               <span>&copy; 2026</span>
+            </div>
           </div>
         </section>
 
-        {/* LAADBALK: Zwevend en minimalistisch */}
-        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 w-48 h-0.5 bg-gray-100 overflow-hidden rounded-full">
-          <div className="h-full bg-red-900 w-0 animate-loadingBar ease-out" />
+        {/* LOADING INDICATOR: Minimalistischer en met percentage */}
+        <div className="fixed bottom-16 flex flex-col items-center gap-3">
+          <span className="text-[9px] font-bold tracking-[0.2em] text-gray-400 font-inter">
+            {percentage}%
+          </span>
+          <div className="w-40 h-px bg-gray-100 overflow-hidden relative">
+            <div 
+              className="absolute top-0 left-0 h-full bg-red-900 transition-all duration-300 ease-out"
+              style={{ width: `${percentage}%` }}
+            />
+          </div>
         </div>
 
       </main>
 
       <style jsx global>{`
+        /* Extra veiligheid voor fonts */
+        .font-oswald { font-family: var(--font-oswald), 'Oswald', sans-serif !important; }
+        .font-inter { font-family: var(--font-inter), 'Inter', sans-serif !important; }
+
         @keyframes expand {
           0% { transform: scaleX(0); opacity: 0; }
           100% { transform: scaleX(1); opacity: 1; }
         }
-        @keyframes loadingBar {
-          0% { width: 0%; }
-          90% { width: 100%; opacity: 1; }
-          100% { width: 100%; opacity: 0; }
-        }
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
+          from { opacity: 0; transform: translateY(15px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-expand {
-          animation: expand 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-          animation-delay: 0.2s;
-        }
-        .animate-loadingBar {
-          animation: loadingBar 5s cubic-bezier(0.1, 0, 0.2, 1) forwards;
+          animation: expand 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+          animation-delay: 0.8s;
         }
         .animate-fadeIn {
-          animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          animation-delay: 1.2s;
+          animation: fadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation-delay: 2s;
         }
       `}</style>
     </div>

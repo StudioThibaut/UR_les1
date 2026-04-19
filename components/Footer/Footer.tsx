@@ -1,75 +1,102 @@
 "use client"
+
 import Link from "next/link"
-import { Instagram, Linkedin } from "lucide-react"
+import { Instagram, Linkedin, ArrowUpRight } from "lucide-react"
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="w-full bg-red-900 text-white py-12 mt-20">
-      <div className="max-w-7xl mx-auto px-6">
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-end">
-          
-          {/* LINKS: Socials met iconen en inspring-effect */}
-          <div className="flex flex-col gap-3 order-2 md:order-1">
-            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/40 mb-1">Socials</span>
-            
-            <a 
-              href="https://www.instagram.com/studiothibaut.be/" 
-              target="_blank" 
+    <footer className="w-full bg-red-900 text-white">
+
+      {/* ── CTA BALK ── */}
+      <div className="border-b border-white/10 px-6 md:px-16 lg:px-24 py-16 md:py-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div>
+          <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40 mb-3">Klaar om samen te werken?</p>
+          <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter leading-none text-white">
+            Neem contact op.
+          </h2>
+        </div>
+        <Link
+          href="/contact"
+          className="inline-flex items-center gap-2 px-8 py-4 bg-white text-red-900 rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-gray-100 transition-all duration-300 shadow-xl shrink-0"
+        >
+          Stuur een bericht
+          <ArrowUpRight size={14} />
+        </Link>
+      </div>
+
+      {/* ── FOOTER LINKS ── */}
+      <div className="px-6 md:px-16 lg:px-24 py-16 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 items-start">
+
+        {/* Naam + tagline */}
+        <div className="space-y-4">
+          <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40">Portfolio</p>
+          <p className="font-black text-2xl uppercase tracking-tighter leading-none">
+            Thibaut<br />Vanden Eynden
+          </p>
+          <p className="text-white/50 font-light text-sm italic">
+            Grafisch ontwerper · Antwerpen
+          </p>
+        </div>
+
+        {/* Socials */}
+        <div className="space-y-4">
+          <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40">Socials</p>
+          <div className="space-y-3">
+            <a
+              href="https://www.instagram.com/studiothibaut.be/"
+              target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 text-xs uppercase tracking-widest text-white/70 hover:text-white transition-all duration-300 hover:ml-2 w-fit"
+              className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-white transition-all duration-300 w-fit"
             >
-              <Instagram size={16} className="text-white/50 group-hover:text-white transition-colors" />
-              <span>Instagram</span>
+              <Instagram size={15} className="text-white/40 group-hover:text-white transition-colors" />
+              Instagram
+              <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
             </a>
-
-            <a 
-              href="https://www.linkedin.com/in/thibaut-vanden-eynden-826147324/" 
-              target="_blank" 
+            <a
+              href="https://www.linkedin.com/in/thibaut-vanden-eynden-826147324/"
+              target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 text-xs uppercase tracking-widest text-white/70 hover:text-white transition-all duration-300 hover:ml-2 w-fit"
+              className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-white transition-all duration-300 w-fit"
             >
-              <Linkedin size={16} className="text-white/50 group-hover:text-white transition-colors" />
-              <span>LinkedIn</span>
+              <Linkedin size={15} className="text-white/40 group-hover:text-white transition-colors" />
+              LinkedIn
+              <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
             </a>
-          </div>
-
-          {/* MIDDEN: Copyright (Desktop) */}
-          <div className="hidden lg:flex justify-center order-2 text-white/40 text-[10px] tracking-widest uppercase pb-1">
-            &copy; {currentYear} — Thibaut Vanden Eynden
-          </div>
-
-          {/* RECHTS: Juridische links */}
-          <div className="flex flex-col items-start md:items-end gap-3 order-1 md:order-3">
-            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/40 mb-1">Legal</span>
-            <Link 
-              href="/terms-of-agreement" 
-              className="text-xs uppercase tracking-widest text-white/70 hover:text-white transition-all duration-300 hover:mr-2"
-            >
-              Terms of Agreement
-            </Link>
-            <Link 
-              href="/copyright-regulations" 
-              className="text-xs uppercase tracking-widest text-white/70 hover:text-white transition-all duration-300 hover:mr-2"
-            >
-              Copyright Regulations
-            </Link>
-            <Link 
-              href="/cookie-settings" 
-              className="text-xs uppercase tracking-widest text-white/70 hover:text-white transition-all duration-300 hover:mr-2"
-            >
-              Cookie Settings
-            </Link>
           </div>
         </div>
 
-        {/* Mobiele copyright weergave */}
-        <div className="mt-12 pt-8 border-t border-white/10 text-center lg:hidden text-white/40 text-[10px] tracking-widest uppercase">
+        {/* Legal */}
+        <div className="space-y-4">
+          <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40">Legal</p>
+          <div className="space-y-3">
+            {[
+              { label: "Terms of Agreement", href: "/terms-of-agreement" },
+              { label: "Copyright Regulations", href: "/copyright-regulations" },
+              { label: "Cookie Settings", href: "/cookie-settings" },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-white transition-all duration-300 w-fit"
+              >
+                {item.label}
+                <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── COPYRIGHT BALK ── */}
+      <div className="border-t border-white/10 px-6 md:px-16 lg:px-24 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p className="text-[10px] font-bold tracking-widest uppercase text-white/30">
           &copy; {currentYear} — Thibaut Vanden Eynden
-        </div>
-
+        </p>
+        <p className="text-[10px] font-bold tracking-widest uppercase text-white/30">
+          Antwerpen, België
+        </p>
       </div>
     </footer>
   )

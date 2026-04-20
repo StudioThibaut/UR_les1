@@ -111,9 +111,9 @@ export default function MemoryProject() {
 
       <div className="fixed top-0 left-0 h-1 bg-red-900 z-50 transition-all duration-300 ease-out" style={{ width: `${scrollProgress}%` }} />
 
-      {/* ── 1. HERO ── */}
-      <section className="min-h-screen flex flex-col justify-end px-6 md:px-16 lg:px-24 pt-28 pb-20 border-b border-gray-100 relative">
-        <Link href="/portfolio" className="absolute top-8 left-6 md:left-16 inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors group">
+{/* ── 1. HERO ── */}
+      <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-28 pb-20 relative">
+        <Link href="/portfolio" className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors group">
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Terug naar portfolio</span>
         </Link>
@@ -128,14 +128,13 @@ export default function MemoryProject() {
 
         <div className="w-20 h-0.5 bg-red-900 mb-10 origin-left animate-expand" />
 
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
-          <p className="text-lg md:text-2xl text-gray-400 font-light italic max-w-2xl leading-relaxed">
-            "Tegen het vergeten." — Een interactief onderzoek naar het emotioneel geheugen, ontworpen voor mensen met dementie en hun naasten.
-          </p>
-          <a href="#highlights" className="inline-block text-[10px] font-bold tracking-[0.3em] uppercase text-red-900 border border-red-900/30 px-8 py-4 rounded-full hover:bg-red-900 hover:text-white transition-all duration-300 shrink-0">
-            Ontdek het project ↓
-          </a>
-        </div>
+        <p className="text-lg md:text-2xl text-gray-400 font-light italic max-w-2xl leading-relaxed mb-12">
+          "Tegen het vergeten." — Een interactief onderzoek naar het emotioneel geheugen, ontworpen voor mensen met dementie en hun naasten.
+        </p>
+
+        <a href="#highlights" className="inline-block text-[10px] font-bold tracking-[0.3em] uppercase text-red-900 border border-red-900/30 px-8 py-4 rounded-full hover:bg-red-900 hover:text-white transition-all duration-300">
+          Ontdek het project ↓
+        </a>
 
         {/* Hero image */}
         <div

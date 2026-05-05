@@ -1,14 +1,41 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ArrowUpRight, Lightbulb, Terminal, Layers, Monitor, Cpu } from "lucide-react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
+
+const gaEvent = ({ action, category, label }: { action: string; category: string; label: string }) => {
+  if (typeof window !== "undefined" && (window as any).gtag) {
+    (window as any).gtag("event", action, {
+      event_category: category,
+      event_label: label,
+    })
+    console.log(`[GA] ${action} → ${label}`)
+  }
+}
 
 export default function AboutMePage() {
   const [title, setTitle] = useState("")
   const [scrollProgress, setScrollProgress] = useState(0)
   const fullTitle = "OVER MIJ"
+  const router = useRouter()
+
+  const scrollMilestones = useRef<Set<number>>(new Set())
+  const pageStartTime = useRef<number>(Date.now())
+  // Track welke secties gezien zijn
+  const sectionsViewed = useRef<Set<string>>(new Set())
+
+  useEffect(() => {
+    gaEvent({ action: "page_view_over_mij", category: "over_mij", label: "over mij pagina geladen" })
+
+    const handleUnload = () => {
+      const timeSpent = Math.round((Date.now() - pageStartTime.current) / 1000)
+      gaEvent({ action: "time_on_page", category: "over_mij", label: `${timeSpent} seconden` })
+    }
+    window.addEventListener("beforeunload", handleUnload)
+    return () => window.removeEventListener("beforeunload", handleUnload)
+  }, [])
 
   useEffect(() => {
     let index = 0
@@ -23,11 +50,64 @@ export default function AboutMePage() {
   useEffect(() => {
     const handleScroll = () => {
       const height = document.documentElement.scrollHeight - window.innerHeight
-      setScrollProgress((window.scrollY / height) * 100)
+      const progress = Math.round((window.scrollY / height) * 100)
+      setScrollProgress(progress)
+
+      // Scroll diepte mijlpalen
+      const milestones = [25, 50, 75, 100]
+      milestones.forEach((milestone) => {
+        if (progress >= milestone && !scrollMilestones.current.has(milestone)) {
+          scrollMilestones.current.add(milestone)
+          gaEvent({
+            action: `scroll_depth_${milestone}`,
+            category: "over_mij",
+            label: `${milestone}% gescrolld`,
+          })
+        }
+      })
+
+      // Track welke secties zichtbaar zijn
+      const sections = [
+        { id: "bio", threshold: 15 },
+        { id: "disciplines", threshold: 35 },
+        { id: "tools", threshold: 55 },
+        { id: "tijdlijn", threshold: 75 },
+      ]
+      sections.forEach(({ id, threshold }) => {
+        if (progress >= threshold && !sectionsViewed.current.has(id)) {
+          sectionsViewed.current.add(id)
+          gaEvent({
+            action: `section_viewed_${id}`,
+            category: "over_mij",
+            label: `sectie: ${id}`,
+          })
+        }
+      })
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  const handleCTAClick = (label: string, href: string) => {
+    const timeSpent = Math.round((Date.now() - pageStartTime.current) / 1000)
+    gaEvent({
+      action: `cta_click_${label}`,
+      category: "over_mij",
+      label: `${href} na ${timeSpent}s`,
+    })
+    router.push(href)
+  }
+
+  const handleFotoHover = () => {
+    if (!sectionsViewed.current.has("foto_hover")) {
+      sectionsViewed.current.add("foto_hover")
+      gaEvent({
+        action: "foto_hover",
+        category: "over_mij",
+        label: "profielfoto bekeken",
+      })
+    }
+  }
 
   const disciplines = [
     "Visuele Identiteit", "Digitale Producten", "Motion Design",
@@ -92,20 +172,22 @@ export default function AboutMePage() {
             en{" "}
             <span className="text-gray-900 font-black not-italic font-oswald">digitale innovatie</span>."
           </p>
-          <Link
-            href="/portfolio"
+          {/* HERO CTA — getrackt */}
+          <button
+            onClick={() => handleCTAClick("Bekijk portfolio hero", "/portfolio")}
             className="inline-flex items-center gap-2 px-8 py-4 bg-red-900 text-white rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-gray-900 transition-all duration-300 shadow-xl shadow-red-900/20 shrink-0"
           >
             Bekijk portfolio
             <ArrowUpRight size={14} />
-          </Link>
+          </button>
         </div>
       </section>
 
       {/* ── 2. FOTO + BIO ── */}
       <section className="px-6 md:px-16 lg:px-24 py-28 md:py-40 border-b border-gray-100">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24 items-center">
-          <div className="relative group">
+          {/* Foto — hover getrackt */}
+          <div className="relative group" onMouseEnter={handleFotoHover}>
             <div className="relative aspect-4/5 rounded-3xl overflow-hidden shadow-2xl bg-gray-50">
               <Image
                 src="/IMG/Thibaut2.jpg"
@@ -138,7 +220,11 @@ export default function AboutMePage() {
                 { icon: <Lightbulb size={24} className="text-red-900" />, label: "Conceptueel", desc: "Elk project start met een heldere vraag en een gedragen antwoord." },
                 { icon: <Terminal size={24} className="text-red-900" />, label: "Technisch", desc: "Van eerste pixel tot laatste regel code — elk detail is een keuze." },
               ].map((item, i) => (
-                <div key={i} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 space-y-3 hover:border-red-900/20 hover:shadow-sm transition-all">
+                <div
+                  key={i}
+                  onClick={() => gaEvent({ action: `eigenschap_click_${item.label}`, category: "over_mij", label: item.label })}
+                  className="bg-gray-50 rounded-2xl p-6 border border-gray-100 space-y-3 hover:border-red-900/20 hover:shadow-sm transition-all cursor-pointer"
+                >
                   {item.icon}
                   <h4 className="font-black text-sm uppercase tracking-tight text-gray-900 font-oswald">{item.label}</h4>
                   <p className="text-gray-400 font-light text-xs leading-relaxed italic">{item.desc}</p>
@@ -160,7 +246,8 @@ export default function AboutMePage() {
             {disciplines.map((s, i) => (
               <span
                 key={i}
-                className="px-5 py-3 bg-gray-50 border border-gray-100 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-600 hover:border-red-900 hover:text-red-900 transition-all cursor-default font-oswald"
+                onClick={() => gaEvent({ action: `discipline_click_${s}`, category: "over_mij", label: s })}
+                className="px-5 py-3 bg-gray-50 border border-gray-100 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-600 hover:border-red-900 hover:text-red-900 transition-all cursor-pointer font-oswald"
               >
                 {s}
               </span>
@@ -185,7 +272,11 @@ export default function AboutMePage() {
                 </div>
                 <ul className="space-y-4">
                   {cat.tools.map((tool, j) => (
-                    <li key={j} className="flex items-center gap-3 group cursor-default">
+                    <li
+                      key={j}
+                      onClick={() => gaEvent({ action: `tool_click_${tool}`, category: "over_mij", label: `${cat.name}: ${tool}` })}
+                      className="flex items-center gap-3 group cursor-pointer"
+                    >
                       <span className="w-1 h-1 rounded-full bg-red-900/30 group-hover:bg-red-900 transition-colors" />
                       <span className="text-[11px] font-light text-gray-500 group-hover:text-gray-900 transition-colors uppercase tracking-wider font-inter">
                         {tool}
@@ -211,7 +302,8 @@ export default function AboutMePage() {
             {timeline.map((item, i) => (
               <div
                 key={i}
-                className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start border-t border-gray-100 py-12 group rounded-2xl px-2 -mx-2 transition-colors"
+                onClick={() => gaEvent({ action: `tijdlijn_click_${item.year}`, category: "over_mij", label: `${item.year}: ${item.event}` })}
+                className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start border-t border-gray-100 py-12 group rounded-2xl px-2 -mx-2 transition-colors cursor-pointer"
               >
                 <div className="md:col-span-2">
                   <span className="text-4xl md:text-5xl font-black tabular-nums text-gray-100 group-hover:text-red-900/20 transition-colors duration-500 font-oswald">
@@ -238,6 +330,17 @@ export default function AboutMePage() {
           </div>
         </div>
       </section>
+
+      <style jsx global>{`
+        @keyframes expand {
+          from { transform: scaleX(0); }
+          to { transform: scaleX(1); }
+        }
+        .animate-expand {
+          animation: expand 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          transform-origin: left;
+        }
+      `}</style>
     </main>
   )
 }

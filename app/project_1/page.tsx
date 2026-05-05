@@ -1,9 +1,19 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ArrowLeft, X, ZoomIn, Info, BookOpen, Camera, Layout } from "lucide-react"
 import Link from "next/link"
+
+const gaEvent = ({ action, category, label }: { action: string; category: string; label: string }) => {
+  if (typeof window !== "undefined" && (window as any).gtag) {
+    (window as any).gtag("event", action, {
+      event_category: category,
+      event_label: label,
+    })
+    console.log(`[GA] ${action} → ${label}`)
+  }
+}
 
 const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
   const [activeHighlight, setActiveHighlight] = useState(0)
@@ -64,7 +74,11 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
 
       {/* ── 1. HERO ── */}
       <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-28 pb-20 relative">
-        <Link href="/portfolio" className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors group">
+        <Link
+          href="/portfolio"
+          onClick={() => gaEvent({ action: "cta_terug_portfolio", category: "project_1", label: "/portfolio" })}
+          className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors group"
+        >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Terug naar portfolio</span>
         </Link>
@@ -83,23 +97,36 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
           "Het vastleggen van de stilte tussen muren." — Een onderzoek naar de essentie van de architecturale lijn.
         </p>
 
-        <a href="#highlights" className="inline-block text-[10px] font-bold tracking-[0.3em] uppercase text-red-900 border border-red-900/30 px-8 py-4 rounded-full hover:bg-red-900 hover:text-white transition-all duration-300">
+        <a
+          href="#highlights"
+          onClick={() => gaEvent({ action: "cta_ontdek_project", category: "project_1", label: "scroll naar highlights" })}
+          className="inline-block text-[10px] font-bold tracking-[0.3em] uppercase text-red-900 border border-red-900/30 px-8 py-4 rounded-full hover:bg-red-900 hover:text-white transition-all duration-300"
+        >
           Ontdek het project ↓
         </a>
 
         {/* Hero — leporello foto, landscape */}
-        <div className="relative w-full max-w-5xl mx-auto mt-20 aspect-video rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
+        <div
+          className="relative w-full max-w-5xl mx-auto mt-20 aspect-video rounded-3xl overflow-hidden shadow-2xl border border-gray-100 cursor-zoom-in group"
+          onClick={() => {
+            setLightboxImage("/IMG/Fotografie_Leporello.jpg")
+            gaEvent({ action: "image_lightbox_open", category: "project_1", label: "hero leporello" })
+          }}
+        >
           <Image
             src="/IMG/Fotografie_Leporello.jpg"
             alt="Overzicht leporello"
             fill
-            className="object-cover"
+            className="object-cover group-hover:scale-105 transition-transform duration-700"
             priority
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
           <p className="absolute bottom-5 left-0 right-0 text-center text-white/70 text-[10px] uppercase tracking-[0.3em] font-bold">
             Overzicht van de tactiele leporello-vouw
           </p>
+          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+            <ZoomIn className="text-white drop-shadow" size={22} />
+          </div>
         </div>
       </section>
 
@@ -119,7 +146,10 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
             {highlights.map((h, i) => (
               <button
                 key={i}
-                onClick={() => setActiveHighlight(i)}
+                onClick={() => {
+                  setActiveHighlight(i)
+                  gaEvent({ action: `highlight_click_${i + 1}`, category: "project_1", label: `highlight ${i + 1}: ${h.label}` })
+                }}
                 className={`w-9 h-9 rounded-full text-xs font-black border-2 transition-all duration-200 ${
                   activeHighlight === i
                     ? 'bg-red-900 border-red-900 text-white scale-110'
@@ -171,7 +201,10 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div
               className="col-span-2 relative aspect-video rounded-2xl overflow-hidden shadow-md group cursor-zoom-in"
-              onClick={() => setLightboxImage(bentoItems[0].img)}
+              onClick={() => {
+                setLightboxImage(bentoItems[0].img)
+                gaEvent({ action: "image_lightbox_open", category: "project_1", label: bentoItems[0].text })
+              }}
             >
               <Image src={bentoItems[0].img} alt="Bento 1" fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
               <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
@@ -182,7 +215,14 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
             </div>
             <div className="grid grid-rows-2 gap-4">
               {[bentoItems[1], bentoItems[2]].map((item, i) => (
-                <div key={i} className="relative rounded-2xl overflow-hidden shadow-md group cursor-zoom-in" onClick={() => setLightboxImage(item.img)}>
+                <div
+                  key={i}
+                  className="relative rounded-2xl overflow-hidden shadow-md group cursor-zoom-in"
+                  onClick={() => {
+                    setLightboxImage(item.img)
+                    gaEvent({ action: "image_lightbox_open", category: "project_1", label: item.text })
+                  }}
+                >
                   <Image src={item.img} alt="Bento" fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
                   <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
                   <p className="absolute bottom-3 left-3 right-3 text-white text-xs font-light italic">{item.text}</p>
@@ -197,7 +237,10 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
               <div
                 key={i}
                 className={`relative rounded-2xl overflow-hidden shadow-md group cursor-zoom-in ${item.aspect === 'landscape' ? 'aspect-video' : 'aspect-3/4'}`}
-                onClick={() => setLightboxImage(item.img)}
+                onClick={() => {
+                  setLightboxImage(item.img)
+                  gaEvent({ action: "image_lightbox_open", category: "project_1", label: item.text })
+                }}
               >
                 <Image src={item.img} alt="Bento" fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
                 <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
@@ -257,13 +300,17 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
                 ]
               },
             ].map((s, i) => (
-              <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start border-t border-gray-200 py-14">
+              <div
+                key={i}
+                onClick={() => gaEvent({ action: `tekstsectie_click_${s.tag}`, category: "project_1", label: s.title })}
+                className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start border-t border-gray-200 py-14 cursor-pointer group"
+              >
                 <div className="md:col-span-4">
                   <div className="flex items-center gap-3 text-red-900 mb-2">
                     {s.icon}
                     <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400">{s.tag}</p>
                   </div>
-                  <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-gray-900">{s.title}</h3>
+                  <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-gray-900 group-hover:text-red-900 transition-colors">{s.title}</h3>
                 </div>
                 <div className="md:col-span-8 space-y-5 text-gray-600 font-light leading-relaxed text-base md:text-lg">
                   {s.body.map((p, j) => <p key={j}>{p}</p>)}
@@ -304,7 +351,11 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
                 desc: "Expositie in de FOMU Shop, Waalsekaai 47. Gratis toegankelijk voor het publiek."
               },
             ].map((f, i) => (
-              <div key={i} className="bg-gray-50 rounded-2xl p-8 md:p-10 border border-gray-100 space-y-4 hover:border-red-900/20 hover:shadow-sm transition-all">
+              <div
+                key={i}
+                onClick={() => gaEvent({ action: `feature_click_${f.title}`, category: "project_1", label: f.title })}
+                className="bg-gray-50 rounded-2xl p-8 md:p-10 border border-gray-100 space-y-4 hover:border-red-900/20 hover:shadow-sm transition-all cursor-pointer"
+              >
                 <div className="text-red-900">{f.icon}</div>
                 <h4 className="font-black text-xl uppercase tracking-tight text-gray-900">{f.title}</h4>
                 <p className="text-gray-500 font-light text-sm leading-relaxed">{f.desc}</p>
@@ -328,7 +379,14 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
           {/* Rij 1: 2 landscape naast elkaar */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             {[images[0], images[4]].map((img, i) => (
-              <div key={i} className="relative aspect-video rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group" onClick={() => setLightboxImage(img)}>
+              <div
+                key={i}
+                className="relative aspect-video rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group"
+                onClick={() => {
+                  setLightboxImage(img)
+                  gaEvent({ action: "image_lightbox_open", category: "project_1", label: `galerij landscape ${i + 1}` })
+                }}
+              >
                 <Image src={img} alt="Landscape" fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
                 <div className="absolute inset-0 bg-red-900/10 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
                   <ZoomIn className="text-white drop-shadow" size={24} />
@@ -340,7 +398,14 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
           {/* Rij 2: 3 portrait naast elkaar */}
           <div className="grid grid-cols-3 gap-4 mb-4">
             {[images[1], images[3], images[5]].map((img, i) => (
-              <div key={i} className="relative aspect-3/4 rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group" onClick={() => setLightboxImage(img)}>
+              <div
+                key={i}
+                className="relative aspect-3/4 rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group"
+                onClick={() => {
+                  setLightboxImage(img)
+                  gaEvent({ action: "image_lightbox_open", category: "project_1", label: `galerij portrait ${i + 1}` })
+                }}
+              >
                 <Image src={img} alt="Portrait" fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
                 <div className="absolute inset-0 bg-red-900/10 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
                   <ZoomIn className="text-white drop-shadow" size={24} />
@@ -352,7 +417,14 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
           {/* Rij 3: 2 landscape */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             {[images[6], images[8]].map((img, i) => (
-              <div key={i} className="relative aspect-video rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group" onClick={() => setLightboxImage(img)}>
+              <div
+                key={i}
+                className="relative aspect-video rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group"
+                onClick={() => {
+                  setLightboxImage(img)
+                  gaEvent({ action: "image_lightbox_open", category: "project_1", label: `galerij landscape rij3 ${i + 1}` })
+                }}
+              >
                 <Image src={img} alt="Landscape" fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
                 <div className="absolute inset-0 bg-red-900/10 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
                   <ZoomIn className="text-white drop-shadow" size={24} />
@@ -365,7 +437,14 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
           <div className="grid grid-cols-4 gap-4">
             <div />
             {[images[7], images[9], images[2]].map((img, i) => (
-              <div key={i} className="relative aspect-3/4 rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group" onClick={() => setLightboxImage(img)}>
+              <div
+                key={i}
+                className="relative aspect-3/4 rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group"
+                onClick={() => {
+                  setLightboxImage(img)
+                  gaEvent({ action: "image_lightbox_open", category: "project_1", label: `galerij portrait rij4 ${i + 1}` })
+                }}
+              >
                 <Image src={img} alt="Portrait" fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
                 <div className="absolute inset-0 bg-red-900/10 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
                   <ZoomIn className="text-white drop-shadow" size={24} />
@@ -398,7 +477,8 @@ const DesignA = ({ images, title, setLightboxImage, scrollProgress }: any) => {
             ].map(([a, b, imgA, imgB], i) => (
               <div
                 key={i}
-                className="grid grid-cols-3 items-center border border-gray-100 rounded-2xl px-6 md:px-10 py-5 bg-gray-50 hover:bg-red-900/5 hover:border-red-900/10 transition-all group cursor-default"
+                onClick={() => gaEvent({ action: `dialoog_click_${a}_vs_${b}`, category: "project_1", label: `${a} vs ${b}` })}
+                className="grid grid-cols-3 items-center border border-gray-100 rounded-2xl px-6 md:px-10 py-5 bg-gray-50 hover:bg-red-900/5 hover:border-red-900/10 transition-all group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 opacity-60 group-hover:opacity-100 transition-opacity">
@@ -452,6 +532,9 @@ export default function ProjectFotografie() {
   const [scrollProgress, setScrollProgress] = useState(0)
   const fullTitle = "FOTOGRAFIE FOMU"
 
+  const scrollMilestones = useRef<Set<number>>(new Set())
+  const pageStartTime = useRef<number>(Date.now())
+
   const images = [
     "/IMG/1.1_rechte-lijn.jpg",
     "/IMG/1.2_gebogen-lijn.jpg",
@@ -466,6 +549,17 @@ export default function ProjectFotografie() {
   ]
 
   useEffect(() => {
+    gaEvent({ action: "page_view_project_1", category: "project_1", label: "Fotografie FOMU pagina geladen" })
+
+    const handleUnload = () => {
+      const timeSpent = Math.round((Date.now() - pageStartTime.current) / 1000)
+      gaEvent({ action: "time_on_page", category: "project_1", label: `${timeSpent} seconden` })
+    }
+    window.addEventListener("beforeunload", handleUnload)
+    return () => window.removeEventListener("beforeunload", handleUnload)
+  }, [])
+
+  useEffect(() => {
     let index = 0
     const interval = setInterval(() => {
       setTitle(fullTitle.slice(0, index + 1))
@@ -478,7 +572,16 @@ export default function ProjectFotografie() {
   useEffect(() => {
     const update = () => {
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
-      setScrollProgress((window.scrollY / scrollHeight) * 100)
+      const progress = Math.round((window.scrollY / scrollHeight) * 100)
+      setScrollProgress(progress)
+
+      const milestones = [25, 50, 75, 100]
+      milestones.forEach((milestone) => {
+        if (progress >= milestone && !scrollMilestones.current.has(milestone)) {
+          scrollMilestones.current.add(milestone)
+          gaEvent({ action: `scroll_depth_${milestone}`, category: "project_1", label: `${milestone}% gescrolld` })
+        }
+      })
     }
     window.addEventListener("scroll", update)
     return () => window.removeEventListener("scroll", update)
@@ -497,7 +600,10 @@ export default function ProjectFotografie() {
       {lightboxImage && (
         <div
           className="fixed inset-0 bg-black/98 z-50 flex items-center justify-center p-4 cursor-pointer"
-          onClick={() => setLightboxImage(null)}
+          onClick={() => {
+            setLightboxImage(null)
+            gaEvent({ action: "image_lightbox_close", category: "project_1", label: "lightbox gesloten" })
+          }}
         >
           <button className="absolute top-6 right-6 text-white/50 hover:text-white p-2 transition-colors">
             <X size={32} />

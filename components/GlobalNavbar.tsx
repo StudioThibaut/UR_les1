@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { GiHamburgerMenu } from "react-icons/gi"
 import { FiX, FiLock, FiArrowRight, FiUser, FiSettings, FiChevronDown } from "react-icons/fi"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 const rawProjects = [
   { t: "Fotografie", h: "/project_1" },
@@ -14,40 +14,65 @@ const rawProjects = [
   { t: "Tegen Dementie", h: "/project_4" },
 ]
 
+const gaEvent = ({ action, category, label }: { action: string; category: string; label: string }) => {
+  if (typeof window !== "undefined" && (window as any).gtag) {
+    (window as any).gtag("event", action, {
+      event_category: category,
+      event_label: label,
+    })
+    console.log(`[GA] ${action} → ${label}`)
+  }
+}
+
 export default function GlobalNavbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isProjectOpen, setIsProjectOpen] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
 
   const sortedProjects = useMemo(() => {
     return [...rawProjects].sort((a, b) => a.t.localeCompare(b.t))
   }, [])
 
-  const closeMenu = () => setIsOpen(false)
+  const closeMenu = (reason: string = "onbekend") => {
+    setIsOpen(false)
+    gaEvent({ action: "menu_close", category: "navigation", label: `gesloten via: ${reason}` })
+  }
 
-  const trackNav = (label: string) => {
-    if (typeof window !== "undefined" && (window as any).gtag) {
-      (window as any).gtag("event", "navigation_click", {
-        event_category: "navigatie",
-        event_label: label,
-      })
-    }
+  const handleNavigation = (href: string, label?: string) => {
+    gaEvent({
+      action: `nav_click_${label ?? href}`,
+      category: "navigation",
+      label: href,
+    })
+    setIsOpen(false)
+    router.push(href)
   }
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeMenu()
+      if (e.key === "Escape" && isOpen) {
+        closeMenu("escape toets")
+      }
     }
     window.addEventListener("keydown", handleEsc)
     return () => window.removeEventListener("keydown", handleEsc)
-  }, [])
+  }, [isOpen])
 
   return (
     <>
       {/* TRIGGERS */}
       <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="fixed top-8 left-8 z-100">
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            const next = !isOpen
+            setIsOpen(next)
+            gaEvent({
+              action: next ? "menu_open" : "menu_close",
+              category: "navigation",
+              label: next ? "Menu openen" : "gesloten via: menu knop"
+            })
+          }}
           className={`p-4 md:p-5 rounded-3xl transition-all duration-500 shadow-2xl flex items-center gap-4 ${
             isOpen ? "bg-red-900 text-white" : "bg-white/90 backdrop-blur-md text-gray-900 border border-white/20 hover:scale-105"
           }`}
@@ -58,13 +83,12 @@ export default function GlobalNavbar() {
       </motion.div>
 
       <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="fixed top-8 right-8 z-100">
-        <Link
-          href="/login"
-          onClick={() => trackNav("Account")}
+        <button
+          onClick={() => handleNavigation("/login", "Account")}
           className="px-6 md:px-8 py-3.5 md:py-4 bg-black text-white rounded-3xl text-[10px] font-black uppercase tracking-widest hover:bg-red-900 transition-all shadow-2xl flex items-center gap-3 active:scale-95"
         >
           <FiLock size={14} /> Account
-        </Link>
+        </button>
       </motion.div>
 
       {/* MENU OVERLAY */}
@@ -74,7 +98,11 @@ export default function GlobalNavbar() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-90 flex justify-center overflow-y-auto bg-white/95 backdrop-blur-2xl"
           >
-            <div className="absolute inset-0 z-0" onClick={closeMenu} />
+            {/* Klik buiten menu = sluiten + tracking */}
+            <div
+              className="absolute inset-0 z-0"
+              onClick={() => closeMenu("klik buiten menu")}
+            />
 
             <div className="relative z-10 w-full max-w-6xl grid md:grid-cols-2 gap-12 md:gap-20 px-8 py-32 md:py-40 items-start">
 
@@ -88,9 +116,8 @@ export default function GlobalNavbar() {
                   const isActive = pathname === item.path
                   return (
                     <motion.div key={item.name} initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.1 }}>
-                      <Link
-                        href={item.path}
-                        onClick={() => { closeMenu(); trackNav(item.name) }}
+                      <button
+                        onClick={() => handleNavigation(item.path, item.name)}
                         className={`group flex items-center gap-6 text-4xl md:text-6xl font-black uppercase tracking-tighter transition-all ${
                           isActive ? "text-red-900" : "text-gray-900 hover:text-red-900"
                         }`}
@@ -99,7 +126,7 @@ export default function GlobalNavbar() {
                           {item.name}
                         </span>
                         <FiArrowRight className={`transition-all text-3xl md:text-4xl ${isActive ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6 group-hover:opacity-100 group-hover:translate-x-0"}`} />
-                      </Link>
+                      </button>
                     </motion.div>
                   )
                 })}
@@ -111,7 +138,15 @@ export default function GlobalNavbar() {
                 className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-gray-100 shadow-[0_20px_60px_rgba(0,0,0,0.03)]"
               >
                 <button
-                  onClick={() => setIsProjectOpen(!isProjectOpen)}
+                  onClick={() => {
+                    const next = !isProjectOpen
+                    setIsProjectOpen(next)
+                    gaEvent({
+                      action: next ? "projects_open" : "projects_close",
+                      category: "navigation",
+                      label: next ? "Projecten openen" : "Projecten sluiten"
+                    })
+                  }}
                   className="flex items-center justify-between w-full text-[10px] font-black uppercase tracking-[0.5em] text-gray-400 hover:text-red-900 transition-colors group"
                 >
                   <span className="group-hover:translate-x-1 transition-transform">Projecten ({sortedProjects.length})</span>
@@ -122,16 +157,16 @@ export default function GlobalNavbar() {
                   <div className="overflow-hidden">
                     <div className="space-y-1 max-h-[40vh] overflow-y-auto pr-4 custom-scrollbar">
                       {sortedProjects.map((p) => (
-                        <Link
-                          key={p.t} href={p.h}
-                          onClick={() => { closeMenu(); trackNav(p.t) }}
-                          className="flex items-center justify-between py-4 border-b border-gray-50 group transition-all"
+                        <button
+                          key={p.t}
+                          onClick={() => handleNavigation(p.h, p.t)}
+                          className="w-full flex items-center justify-between py-4 border-b border-gray-50 group transition-all"
                         >
                           <span className={`text-lg md:text-xl font-black uppercase tracking-tight transition-all group-hover:translate-x-2 ${pathname === p.h ? "text-red-900" : "text-gray-800 group-hover:text-red-900"}`}>
                             {p.t}
                           </span>
                           <FiArrowRight size={18} className={`${pathname === p.h ? "text-red-900" : "text-gray-100"} group-hover:text-red-900 transition-colors`} />
-                        </Link>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -139,20 +174,18 @@ export default function GlobalNavbar() {
 
                 {/* Footer Acties */}
                 <div className="pt-8 mt-6 border-t border-gray-100 grid grid-cols-2 gap-4">
-                  <Link
-                    href="/admin"
-                    onClick={() => { closeMenu(); trackNav("Admin") }}
+                  <button
+                    onClick={() => handleNavigation("/admin", "Admin")}
                     className="flex items-center justify-center gap-2 py-4 bg-black text-white rounded-[2rem] text-[9px] font-black uppercase tracking-widest hover:bg-red-900 transition-all shadow-lg hover:-translate-y-0.5"
                   >
                     <FiSettings size={14} /> Admin
-                  </Link>
-                  <Link
-                    href="/userlandingspage"
-                    onClick={() => { closeMenu(); trackNav("Profile") }}
+                  </button>
+                  <button
+                    onClick={() => handleNavigation("/userlandingspage", "Profile")}
                     className="flex items-center justify-center gap-2 py-4 bg-gray-50 text-gray-900 rounded-[2rem] text-[9px] font-black uppercase tracking-widest hover:bg-red-900 hover:text-white transition-all"
                   >
                     <FiUser size={14} /> Profile
-                  </Link>
+                  </button>
                 </div>
               </motion.div>
             </div>

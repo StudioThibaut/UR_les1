@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,13 +12,36 @@ import { toast } from "sonner"
 import { ArrowLeft, Lock, UserPlus, Key } from "lucide-react"
 import Link from "next/link"
 
+const gaEvent = ({ action, category, label }: { action: string; category: string; label: string }) => {
+  if (typeof window !== "undefined" && (window as any).gtag) {
+    (window as any).gtag("event", action, {
+      event_category: category,
+      event_label: label,
+    })
+    console.log(`[GA] ${action} → ${label}`)
+  }
+}
+
 export default function LoginPage() {
   const [loading, setLoading] = React.useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [activeTab, setActiveTab] = useState("login")
 
-  /* TYPEWRITER - Consistent met Studio Thibaut stijl */
+  const pageStartTime = useRef<number>(Date.now())
+
   const title = "ACCOUNT"
   const [displayedTitle, setDisplayedTitle] = useState("")
+
+  useEffect(() => {
+    gaEvent({ action: "page_view_login", category: "login", label: "login pagina geladen" })
+
+    const handleUnload = () => {
+      const timeSpent = Math.round((Date.now() - pageStartTime.current) / 1000)
+      gaEvent({ action: "time_on_page", category: "login", label: `${timeSpent} seconden` })
+    }
+    window.addEventListener("beforeunload", handleUnload)
+    return () => window.removeEventListener("beforeunload", handleUnload)
+  }, [])
 
   useEffect(() => {
     let index = 0
@@ -30,7 +53,6 @@ export default function LoginPage() {
     return () => clearInterval(interval)
   }, [])
 
-  /* SCROLL PROGRESS LOGIC */
   useEffect(() => {
     const updateScrollProgress = () => {
       const currentScrollY = window.scrollY
@@ -38,7 +60,6 @@ export default function LoginPage() {
       const progress = (currentScrollY / scrollHeight) * 100
       setScrollProgress(progress > 0 ? progress : 0)
     }
-
     window.addEventListener("scroll", updateScrollProgress)
     return () => window.removeEventListener("scroll", updateScrollProgress)
   }, [])
@@ -46,11 +67,16 @@ export default function LoginPage() {
   async function mockSubmit(e: React.FormEvent, actionName: string) {
     e.preventDefault()
     setLoading(true)
+
+    gaEvent({ action: `form_submit_${actionName.toLowerCase()}`, category: "login", label: `${actionName} poging` })
+
     try {
       await new Promise((r) => setTimeout(r, 1200))
       toast.success(`${actionName} succesvol verwerkt!`)
+      gaEvent({ action: `form_success_${actionName.toLowerCase()}`, category: "login", label: `${actionName} gelukt` })
     } catch {
       toast.error(`Fout bij ${actionName}`)
+      gaEvent({ action: `form_error_${actionName.toLowerCase()}`, category: "login", label: `${actionName} mislukt` })
     } finally {
       setLoading(false)
     }
@@ -58,9 +84,9 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen bg-white text-gray-900 selection:bg-red-900 selection:text-white relative overflow-x-hidden">
-      
+
       {/* SCROLL PROGRESS BAR */}
-      <div 
+      <div
         className="fixed top-0 left-0 h-1 bg-red-900 z-100 transition-all duration-150 ease-out"
         style={{ width: `${scrollProgress}%` }}
       />
@@ -69,7 +95,11 @@ export default function LoginPage() {
 
         {/* HERO */}
         <header className="max-w-4xl">
-          <Link href="/home" className="inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors mb-8 md:mb-12 group">
+          <Link
+            href="/home"
+            onClick={() => gaEvent({ action: "cta_terug_home", category: "login", label: "/home" })}
+            className="inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors mb-8 md:mb-12 group"
+          >
             <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
             <span className="text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">Terug naar home</span>
           </Link>
@@ -84,9 +114,8 @@ export default function LoginPage() {
         {/* LOGIN SECTIE */}
         <section className="flex justify-center items-center py-4 md:py-10 opacity-0 animate-fadeIn">
           <Card className="border-none bg-gray-50 rounded-3xl md:rounded-[2.5rem] p-2 md:p-4 shadow-2xl shadow-red-900/5 w-full max-w-md mx-auto relative overflow-hidden">
-            {/* Subtiel rood accent */}
             <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-red-900/5 rounded-bl-full -mr-12 -mt-12 md:-mr-16 md:-mt-16"></div>
-            
+
             <CardHeader className="relative z-10 space-y-1 md:space-y-2 text-center md:text-left">
               <CardTitle className="text-2xl md:text-3xl font-bold uppercase tracking-tighter">Welkom</CardTitle>
               <CardDescription className="text-gray-500 font-light uppercase tracking-widest text-[8px] md:text-[10px]">
@@ -95,7 +124,14 @@ export default function LoginPage() {
             </CardHeader>
 
             <CardContent className="relative z-10 mt-4">
-              <Tabs defaultValue="login" className="w-full">
+              <Tabs
+                defaultValue="login"
+                className="w-full"
+                onValueChange={(value) => {
+                  setActiveTab(value)
+                  gaEvent({ action: `tab_click_${value}`, category: "login", label: `tab: ${value}` })
+                }}
+              >
                 <TabsList className="grid w-full grid-cols-3 bg-white/50 p-1 rounded-xl mb-6 md:mb-8">
                   <TabsTrigger value="login" className="rounded-lg data-[state=active]:bg-red-900 data-[state=active]:text-white transition-all uppercase text-[8px] md:text-[10px] font-bold tracking-widest py-2 md:py-3">Login</TabsTrigger>
                   <TabsTrigger value="register" className="rounded-lg data-[state=active]:bg-red-900 data-[state=active]:text-white transition-all uppercase text-[8px] md:text-[10px] font-bold tracking-widest py-2 md:py-3">Registreer</TabsTrigger>
@@ -107,11 +143,21 @@ export default function LoginPage() {
                   <form onSubmit={(e) => mockSubmit(e, "Login")} className="space-y-4 md:space-y-6">
                     <div className="space-y-2">
                       <Label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Email</Label>
-                      <Input type="email" required className="bg-white border-none rounded-xl h-11 md:h-12 px-4 shadow-sm focus-visible:ring-red-900" />
+                      <Input
+                        type="email"
+                        required
+                        onFocus={() => gaEvent({ action: "form_field_focus_email", category: "login", label: "login email veld" })}
+                        className="bg-white border-none rounded-xl h-11 md:h-12 px-4 shadow-sm focus-visible:ring-red-900"
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Wachtwoord</Label>
-                      <Input type="password" required className="bg-white border-none rounded-xl h-11 md:h-12 px-4 shadow-sm focus-visible:ring-red-900" />
+                      <Input
+                        type="password"
+                        required
+                        onFocus={() => gaEvent({ action: "form_field_focus_password", category: "login", label: "login wachtwoord veld" })}
+                        className="bg-white border-none rounded-xl h-11 md:h-12 px-4 shadow-sm focus-visible:ring-red-900"
+                      />
                     </div>
                     <Button className="w-full bg-red-900 hover:bg-black text-white rounded-xl h-12 md:h-14 font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs transition-all flex gap-2 group mt-4" disabled={loading}>
                       <Lock size={16} className="group-hover:rotate-12 transition-transform" />
@@ -125,11 +171,21 @@ export default function LoginPage() {
                   <form onSubmit={(e) => mockSubmit(e, "Register")} className="space-y-4 md:space-y-6">
                     <div className="space-y-2">
                       <Label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Email</Label>
-                      <Input type="email" required className="bg-white border-none rounded-xl h-11 md:h-12 px-4 shadow-sm focus-visible:ring-red-900" />
+                      <Input
+                        type="email"
+                        required
+                        onFocus={() => gaEvent({ action: "form_field_focus_email", category: "login", label: "register email veld" })}
+                        className="bg-white border-none rounded-xl h-11 md:h-12 px-4 shadow-sm focus-visible:ring-red-900"
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Wachtwoord</Label>
-                      <Input type="password" required className="bg-white border-none rounded-xl h-11 md:h-12 px-4 shadow-sm focus-visible:ring-red-900" />
+                      <Input
+                        type="password"
+                        required
+                        onFocus={() => gaEvent({ action: "form_field_focus_password", category: "login", label: "register wachtwoord veld" })}
+                        className="bg-white border-none rounded-xl h-11 md:h-12 px-4 shadow-sm focus-visible:ring-red-900"
+                      />
                     </div>
                     <Button className="w-full bg-red-900 hover:bg-black text-white rounded-xl h-12 md:h-14 font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs transition-all flex gap-2 group mt-4" disabled={loading}>
                       <UserPlus size={16} className="group-hover:scale-110 transition-transform" />
@@ -143,7 +199,12 @@ export default function LoginPage() {
                   <form onSubmit={(e) => mockSubmit(e, "Password Reset")} className="space-y-4 md:space-y-6">
                     <div className="space-y-2">
                       <Label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Email</Label>
-                      <Input type="email" required className="bg-white border-none rounded-xl h-11 md:h-12 px-4 shadow-sm focus-visible:ring-red-900" />
+                      <Input
+                        type="email"
+                        required
+                        onFocus={() => gaEvent({ action: "form_field_focus_email", category: "login", label: "reset email veld" })}
+                        className="bg-white border-none rounded-xl h-11 md:h-12 px-4 shadow-sm focus-visible:ring-red-900"
+                      />
                     </div>
                     <Button className="w-full bg-white text-gray-900 border border-gray-200 hover:bg-red-900 hover:text-white rounded-xl h-12 md:h-14 font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs transition-all flex gap-2 group mt-4" disabled={loading}>
                       <Key size={16} className="group-hover:-rotate-45 transition-transform" />

@@ -1,9 +1,19 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ArrowLeft, X, ZoomIn, Package, Rocket, Target } from "lucide-react"
 import Link from "next/link"
+
+const gaEvent = ({ action, category, label }: { action: string; category: string; label: string }) => {
+  if (typeof window !== "undefined" && (window as any).gtag) {
+    (window as any).gtag("event", action, {
+      event_category: category,
+      event_label: label,
+    })
+    console.log(`[GA] ${action} → ${label}`)
+  }
+}
 
 const DesignA = ({ title, setLightboxImage, scrollProgress }: any) => {
   const [activeHighlight, setActiveHighlight] = useState(0)
@@ -87,7 +97,11 @@ const DesignA = ({ title, setLightboxImage, scrollProgress }: any) => {
 
       {/* ── 1. HERO ── */}
       <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-28 pb-20 relative">
-        <Link href="/portfolio" className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors group">
+        <Link
+          href="/portfolio"
+          onClick={() => gaEvent({ action: "cta_terug_portfolio", category: "project_3", label: "/portfolio" })}
+          className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors group"
+        >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Terug naar portfolio</span>
         </Link>
@@ -106,14 +120,21 @@ const DesignA = ({ title, setLightboxImage, scrollProgress }: any) => {
           "Ontstoken door adrenaline." — Een integrale merkbeleving waarbij kracht, snelheid en visuele energie de kern vormen.
         </p>
 
-        <a href="#highlights" className="inline-block text-[10px] font-bold tracking-[0.3em] uppercase text-red-900 border border-red-900/30 px-8 py-4 rounded-full hover:bg-red-900 hover:text-white transition-all duration-300">
+        <a
+          href="#highlights"
+          onClick={() => gaEvent({ action: "cta_ontdek_project", category: "project_3", label: "scroll naar highlights" })}
+          className="inline-block text-[10px] font-bold tracking-[0.3em] uppercase text-red-900 border border-red-900/30 px-8 py-4 rounded-full hover:bg-red-900 hover:text-white transition-all duration-300"
+        >
           Ontdek het project ↓
         </a>
 
         {/* Hero image */}
         <div
           className="relative w-full max-w-5xl mx-auto mt-20 aspect-video rounded-3xl overflow-hidden shadow-2xl border border-gray-100 cursor-zoom-in group"
-          onClick={() => setLightboxImage("/IMG/Ignition3.jpg")}
+          onClick={() => {
+            setLightboxImage("/IMG/Ignition3.jpg")
+            gaEvent({ action: "image_lightbox_open", category: "project_3", label: "hero afbeelding" })
+          }}
         >
           <Image src="/IMG/Ignition3.jpg" alt="Ignition Energy branding" fill className="object-cover group-hover:scale-105 transition-all duration-700" priority />
           <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
@@ -138,10 +159,13 @@ const DesignA = ({ title, setLightboxImage, scrollProgress }: any) => {
           </p>
 
           <div className="flex gap-2 justify-center flex-wrap mb-10">
-            {highlights.map((_, i) => (
+            {highlights.map((h, i) => (
               <button
                 key={i}
-                onClick={() => setActiveHighlight(i)}
+                onClick={() => {
+                  setActiveHighlight(i)
+                  gaEvent({ action: `highlight_click_${i + 1}`, category: "project_3", label: `highlight ${i + 1}: ${h.label}` })
+                }}
                 className={`w-9 h-9 rounded-full text-xs font-black border-2 transition-all duration-200 ${
                   activeHighlight === i
                     ? 'bg-red-900 border-red-900 text-white scale-110'
@@ -182,13 +206,17 @@ const DesignA = ({ title, setLightboxImage, scrollProgress }: any) => {
 
           <div className="space-y-0">
             {sections.map((s, i) => (
-              <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start border-t border-gray-200 py-14">
+              <div
+                key={i}
+                onClick={() => gaEvent({ action: `tekstsectie_click_${s.tag}`, category: "project_3", label: s.title })}
+                className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start border-t border-gray-200 py-14 cursor-pointer group"
+              >
                 <div className="md:col-span-4">
                   <div className="flex items-center gap-3 text-red-900 mb-2">
                     {s.icon}
                     <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400">{s.tag}</p>
                   </div>
-                  <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-gray-900">{s.title}</h3>
+                  <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-gray-900 group-hover:text-red-900 transition-colors">{s.title}</h3>
                 </div>
                 <div className="md:col-span-8 space-y-5 text-gray-600 font-light leading-relaxed text-base md:text-lg">
                   {s.body.map((p, j) => <p key={j}>{p}</p>)}
@@ -208,7 +236,11 @@ const DesignA = ({ title, setLightboxImage, scrollProgress }: any) => {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {merkPilaren.map(([a, b], i) => (
-              <div key={i} className="bg-gray-50 rounded-2xl p-8 md:p-10 border border-gray-100 space-y-4 hover:border-red-900/20 hover:shadow-sm transition-all">
+              <div
+                key={i}
+                onClick={() => gaEvent({ action: `merkpilaer_click_${a}_vs_${b}`, category: "project_3", label: `${a} vs ${b}` })}
+                className="bg-gray-50 rounded-2xl p-8 md:p-10 border border-gray-100 space-y-4 hover:border-red-900/20 hover:shadow-sm transition-all cursor-pointer"
+              >
                 <div className="flex items-center justify-between">
                   <span className="font-black text-xl uppercase tracking-tight text-gray-900">{a}</span>
                   <span className="text-[10px] font-black text-red-900/40 tracking-widest">VS</span>
@@ -238,7 +270,10 @@ const DesignA = ({ title, setLightboxImage, scrollProgress }: any) => {
           {/* Groot hoofdbeeld */}
           <div
             className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-xl cursor-zoom-in group mb-4"
-            onClick={() => setLightboxImage("/IMG/Ignition3.jpg")}
+            onClick={() => {
+              setLightboxImage("/IMG/Ignition3.jpg")
+              gaEvent({ action: "image_lightbox_open", category: "project_3", label: "galerij hoofdbeeld" })
+            }}
           >
             <Image src="/IMG/Ignition3.jpg" alt="Ignition hoofdbeeld" fill className="object-cover group-hover:scale-105 transition-all duration-700" />
             <div className="absolute inset-0 bg-red-900/10 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
@@ -291,9 +326,13 @@ const DesignA = ({ title, setLightboxImage, scrollProgress }: any) => {
                   "3D Product Mockups",
                   "Brand Styleguide",
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3">
+                  <div
+                    key={i}
+                    onClick={() => gaEvent({ action: `design_asset_click_${item}`, category: "project_3", label: item })}
+                    className="flex items-center gap-3 cursor-pointer group"
+                  >
                     <span className="text-red-900 font-black">•</span>
-                    <span className="text-gray-500 font-light text-sm">{item}</span>
+                    <span className="text-gray-500 font-light text-sm group-hover:text-gray-900 transition-colors">{item}</span>
                   </div>
                 ))}
                 <div className="pt-4 border-t border-gray-200">
@@ -315,6 +354,20 @@ export default function EnergyDrinkPage() {
   const [scrollProgress, setScrollProgress] = useState(0)
   const fullTitle = "IGNITION ENERGY DRINK"
 
+  const scrollMilestones = useRef<Set<number>>(new Set())
+  const pageStartTime = useRef<number>(Date.now())
+
+  useEffect(() => {
+    gaEvent({ action: "page_view_project_3", category: "project_3", label: "Ignition Energy pagina geladen" })
+
+    const handleUnload = () => {
+      const timeSpent = Math.round((Date.now() - pageStartTime.current) / 1000)
+      gaEvent({ action: "time_on_page", category: "project_3", label: `${timeSpent} seconden` })
+    }
+    window.addEventListener("beforeunload", handleUnload)
+    return () => window.removeEventListener("beforeunload", handleUnload)
+  }, [])
+
   useEffect(() => {
     let index = 0
     const interval = setInterval(() => {
@@ -328,7 +381,16 @@ export default function EnergyDrinkPage() {
   useEffect(() => {
     const update = () => {
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
-      setScrollProgress((window.scrollY / scrollHeight) * 100)
+      const progress = Math.round((window.scrollY / scrollHeight) * 100)
+      setScrollProgress(progress)
+
+      const milestones = [25, 50, 75, 100]
+      milestones.forEach((milestone) => {
+        if (progress >= milestone && !scrollMilestones.current.has(milestone)) {
+          scrollMilestones.current.add(milestone)
+          gaEvent({ action: `scroll_depth_${milestone}`, category: "project_3", label: `${milestone}% gescrolld` })
+        }
+      })
     }
     window.addEventListener("scroll", update)
     return () => window.removeEventListener("scroll", update)
@@ -345,7 +407,10 @@ export default function EnergyDrinkPage() {
       {lightboxImage && (
         <div
           className="fixed inset-0 bg-black/98 z-50 flex items-center justify-center p-4 cursor-pointer"
-          onClick={() => setLightboxImage(null)}
+          onClick={() => {
+            setLightboxImage(null)
+            gaEvent({ action: "image_lightbox_close", category: "project_3", label: "lightbox gesloten" })
+          }}
         >
           <button className="absolute top-6 right-6 text-white/50 hover:text-white p-2 transition-colors">
             <X size={32} />

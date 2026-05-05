@@ -1,9 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
+import { useEffect, useState, useRef } from "react"
 import Image from "next/image"
 import { ArrowUpRight, ChevronUp } from "lucide-react"
+import { useRouter } from "next/navigation"
+
+const gaEvent = ({ action, category, label }: { action: string; category: string; label: string }) => {
+  if (typeof window !== "undefined" && (window as any).gtag) {
+    (window as any).gtag("event", action, {
+      event_category: category,
+      event_label: label,
+    })
+    console.log(`[GA] ${action} → ${label}`)
+  }
+}
 
 export default function PortfolioPage() {
   const title = "PORTFOLIO"
@@ -11,6 +21,21 @@ export default function PortfolioPage() {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [activeFilter, setActiveFilter] = useState("ALL")
   const [showTopBtn, setShowTopBtn] = useState(false)
+  const router = useRouter()
+
+  const scrollMilestones = useRef<Set<number>>(new Set())
+  const pageStartTime = useRef<number>(Date.now())
+
+  useEffect(() => {
+    gaEvent({ action: "page_view_portfolio", category: "portfolio", label: "portfolio pagina geladen" })
+
+    const handleUnload = () => {
+      const timeSpent = Math.round((Date.now() - pageStartTime.current) / 1000)
+      gaEvent({ action: "time_on_page", category: "portfolio", label: `${timeSpent} seconden` })
+    }
+    window.addEventListener("beforeunload", handleUnload)
+    return () => window.removeEventListener("beforeunload", handleUnload)
+  }, [])
 
   useEffect(() => {
     let index = 0
@@ -25,12 +50,54 @@ export default function PortfolioPage() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
-      setScrollProgress((window.scrollY / scrollHeight) * 100)
+      const progress = Math.round((window.scrollY / scrollHeight) * 100)
+      setScrollProgress(progress)
       setShowTopBtn(window.scrollY > 400)
+
+      // Scroll diepte mijlpalen
+      const milestones = [25, 50, 75, 100]
+      milestones.forEach((milestone) => {
+        if (progress >= milestone && !scrollMilestones.current.has(milestone)) {
+          scrollMilestones.current.add(milestone)
+          gaEvent({
+            action: `scroll_depth_${milestone}`,
+            category: "portfolio",
+            label: `${milestone}% gescrolld`,
+          })
+        }
+      })
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  const handleProjectClick = (href: string, label: string, context: string) => {
+    const timeSpent = Math.round((Date.now() - pageStartTime.current) / 1000)
+    gaEvent({
+      action: `project_click_${label}`,
+      category: "portfolio",
+      label: `${href} via ${context} na ${timeSpent}s`,
+    })
+    router.push(href)
+  }
+
+  const handleFilterClick = (cat: string) => {
+    gaEvent({
+      action: `filter_click_${cat}`,
+      category: "portfolio",
+      label: `filter: ${cat} — was: ${activeFilter}`,
+    })
+    setActiveFilter(cat)
+  }
+
+  const handleBackToTop = () => {
+    gaEvent({
+      action: "back_to_top",
+      category: "portfolio",
+      label: "terug naar boven geklikt",
+    })
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
 
   const projects = [
     {
@@ -89,7 +156,6 @@ export default function PortfolioPage() {
 
       {/* ── 1. HERO ── */}
       <section className="min-h-[70vh] flex flex-col justify-end px-6 md:px-16 lg:px-24 pt-32 pb-20 border-b border-gray-100">
-
         <h1 className="text-[clamp(4rem,12vw,10rem)] font-black tracking-tighter text-red-900 uppercase leading-[0.85] mb-10">
           {displayedTitle}<span className="opacity-30 animate-pulse">_</span>
         </h1>
@@ -109,7 +175,7 @@ export default function PortfolioPage() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveFilter(cat)}
+                onClick={() => handleFilterClick(cat)}
                 className={`px-5 py-2.5 rounded-full text-[10px] font-black tracking-widest uppercase transition-all duration-200 border ${
                   activeFilter === cat
                     ? "bg-red-900 text-white border-red-900"
@@ -124,14 +190,16 @@ export default function PortfolioPage() {
         </div>
       </section>
 
-      {/* ── 2. FEATURED PROJECT (eerste project groot) ── */}
+      {/* ── 2. FEATURED PROJECT ── */}
       {filteredProjects.length > 0 && (
         <section className="px-6 md:px-16 lg:px-24 py-24 md:py-32 border-b border-gray-100">
           <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-900 mb-10">
             Uitgelicht project
           </p>
-          <Link href={filteredProjects[0].link} className="group grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
-            {/* Afbeelding */}
+          <div
+            onClick={() => handleProjectClick(filteredProjects[0].link, filteredProjects[0].title, "uitgelicht")}
+            className="group grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center cursor-pointer"
+          >
             <div className="relative aspect-4/3 rounded-3xl overflow-hidden bg-gray-50 shadow-xl shadow-gray-200/60 transition-all duration-700 group-hover:shadow-2xl group-hover:shadow-red-900/10 group-hover:-translate-y-1">
               <Image
                 src={filteredProjects[0].image}
@@ -142,7 +210,6 @@ export default function PortfolioPage() {
               />
             </div>
 
-            {/* Info */}
             <div className="space-y-8">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
@@ -168,7 +235,7 @@ export default function PortfolioPage() {
                 <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </div>
             </div>
-          </Link>
+          </div>
         </section>
       )}
 
@@ -181,13 +248,12 @@ export default function PortfolioPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14">
             {filteredProjects.slice(1).map((project, index) => (
-              <Link
+              <div
                 key={project.title}
-                href={project.link}
-                className="group block animate-fadeIn"
+                onClick={() => handleProjectClick(project.link, project.title, "grid")}
+                className="group block animate-fadeIn cursor-pointer"
                 style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "both" }}
               >
-                {/* Afbeelding */}
                 <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-gray-50 shadow-md mb-7 transition-all duration-700 group-hover:shadow-xl group-hover:shadow-red-900/10 group-hover:-translate-y-1">
                   <Image
                     src={project.image}
@@ -195,13 +261,11 @@ export default function PortfolioPage() {
                     fill
                     className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out"
                   />
-                  {/* Tag */}
                   <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
                     <span className="text-[9px] font-black tracking-widest uppercase text-red-900">{project.tag}</span>
                   </div>
                 </div>
 
-                {/* Info */}
                 <div className="flex flex-col gap-3 border-l-2 border-gray-100 pl-6 group-hover:border-red-900 transition-colors duration-500">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-black tracking-[0.25em] text-red-900 uppercase">
@@ -227,7 +291,7 @@ export default function PortfolioPage() {
 
                   <div className="mt-2 w-0 group-hover:w-full h-px bg-red-900/20 transition-all duration-700 ease-out" />
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </section>
@@ -244,7 +308,7 @@ export default function PortfolioPage() {
 
       {/* BACK TO TOP */}
       <button
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        onClick={handleBackToTop}
         className={`fixed bottom-10 right-10 p-4 bg-white border border-gray-100 rounded-full shadow-xl text-red-900 transition-all duration-500 z-50 hover:bg-red-900 hover:text-white hover:border-red-900 group ${
           showTopBtn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
         }`}

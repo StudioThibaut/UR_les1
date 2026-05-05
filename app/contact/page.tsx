@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -12,6 +12,16 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
+
+const gaEvent = ({ action, category, label }: { action: string; category: string; label: string }) => {
+  if (typeof window !== "undefined" && (window as any).gtag) {
+    (window as any).gtag("event", action, {
+      event_category: category,
+      event_label: label,
+    })
+    console.log(`[GA] ${action} → ${label}`)
+  }
+}
 
 const contactSchema = z.object({
   name: z.string().min(2, "Naam moet minstens 2 tekens bevatten"),
@@ -28,6 +38,21 @@ export default function ContactPage() {
   const [displayedTitle, setDisplayedTitle] = useState("")
   const fullTitle = "CONTACT"
 
+  const pageStartTime = useRef<number>(Date.now())
+  const scrollMilestones = useRef<Set<number>>(new Set())
+  const formStartTime = useRef<number | null>(null)
+
+  useEffect(() => {
+    gaEvent({ action: "page_view_contact", category: "contact", label: "contact pagina geladen" })
+
+    const handleUnload = () => {
+      const timeSpent = Math.round((Date.now() - pageStartTime.current) / 1000)
+      gaEvent({ action: "time_on_page", category: "contact", label: `${timeSpent} seconden` })
+    }
+    window.addEventListener("beforeunload", handleUnload)
+    return () => window.removeEventListener("beforeunload", handleUnload)
+  }, [])
+
   useEffect(() => {
     let index = 0
     const interval = setInterval(() => {
@@ -41,7 +66,16 @@ export default function ContactPage() {
   useEffect(() => {
     const update = () => {
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
-      setScrollProgress((window.scrollY / scrollHeight) * 100)
+      const progress = Math.round((window.scrollY / scrollHeight) * 100)
+      setScrollProgress(progress)
+
+      const milestones = [25, 50, 75, 100]
+      milestones.forEach((milestone) => {
+        if (progress >= milestone && !scrollMilestones.current.has(milestone)) {
+          scrollMilestones.current.add(milestone)
+          gaEvent({ action: `scroll_depth_${milestone}`, category: "contact", label: `${milestone}% gescrolld` })
+        }
+      })
     }
     window.addEventListener("scroll", update)
     return () => window.removeEventListener("scroll", update)
@@ -54,13 +88,26 @@ export default function ContactPage() {
 
   async function onSubmit(data: ContactFormValues) {
     setLoading(true)
+    const timeSpent = formStartTime.current
+      ? Math.round((Date.now() - formStartTime.current) / 1000)
+      : null
+
+    gaEvent({
+      action: "form_submit_attempt",
+      category: "contact",
+      label: timeSpent ? `formulier ingevuld in ${timeSpent}s` : "formulier verzonden",
+    })
+
     try {
       await new Promise((r) => setTimeout(r, 1500))
       console.log("Form data:", data)
       toast.success("Bericht succesvol verzonden!")
+      gaEvent({ action: "form_submit_success", category: "contact", label: `onderwerp: ${data.subject}` })
       reset()
+      formStartTime.current = null
     } catch {
       toast.error("Er is iets misgegaan. Probeer het later opnieuw.")
+      gaEvent({ action: "form_submit_error", category: "contact", label: "verzending mislukt" })
     } finally {
       setLoading(false)
     }
@@ -112,8 +159,10 @@ export default function ContactPage() {
                   </div>
                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Email</h3>
                 </div>
+                
                 <a
-                  href="mailto:vandeneyndenthibaut@gmail.be" 
+                  href="mailto:vandeneyndenthibaut@gmail.be"
+                  onClick={() => gaEvent({ action: "email_click", category: "contact", label: "vandeneyndenthibaut@gmail.be" })}
                   className="block font-black text-base md:text-xl uppercase tracking-tight text-gray-900 hover:text-red-900 transition-colors break-all font-oswald"
                 >
                   vandeneyndenthibaut@gmail.be
@@ -148,6 +197,12 @@ export default function ContactPage() {
                 <Input
                   {...register("name")}
                   placeholder="Jouw naam"
+                  onFocus={() => {
+                    if (!formStartTime.current) {
+                      formStartTime.current = Date.now()
+                      gaEvent({ action: "form_start", category: "contact", label: "gebruiker begon formulier in te vullen" })
+                    }
+                  }}
                   className="bg-gray-50 border border-gray-100 rounded-2xl h-14 px-6 text-sm font-light focus-visible:ring-red-900 focus-visible:border-red-900 placeholder:text-gray-300 transition-all"
                 />
                 {errors.name && (

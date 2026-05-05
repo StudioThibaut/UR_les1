@@ -1,12 +1,22 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
   ArrowLeft, X, Palette, Printer, Users,
   Save, Settings, ChevronLeft, Plus, Trash2
 } from "lucide-react"
 import Link from "next/link"
+
+const gaEvent = ({ action, category, label }: { action: string; category: string; label: string }) => {
+  if (typeof window !== "undefined" && (window as any).gtag) {
+    (window as any).gtag("event", action, {
+      event_category: category,
+      event_label: label,
+    })
+    console.log(`[GA] ${action} → ${label}`)
+  }
+}
 
 const DesignA = ({ data, setLightboxImage, scrollProgress }: any) => {
   const [activeHighlight, setActiveHighlight] = useState(0)
@@ -40,7 +50,11 @@ const DesignA = ({ data, setLightboxImage, scrollProgress }: any) => {
 
       {/* ── 1. HERO ── */}
       <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-28 pb-20 relative">
-        <Link href="/portfolio" className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors group">
+        <Link
+          href="/portfolio"
+          onClick={() => gaEvent({ action: "cta_terug_portfolio", category: "project_2", label: "/portfolio" })}
+          className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-gray-400 hover:text-red-900 transition-colors group"
+        >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Terug naar portfolio</span>
         </Link>
@@ -59,13 +73,23 @@ const DesignA = ({ data, setLightboxImage, scrollProgress }: any) => {
           "{data.subtitle}"
         </p>
 
-        <a href="#highlights" className="inline-block text-[10px] font-bold tracking-[0.3em] uppercase text-red-900 border border-red-900/30 px-8 py-4 rounded-full hover:bg-red-900 hover:text-white transition-all duration-300">
+        <a
+          href="#highlights"
+          onClick={() => gaEvent({ action: "cta_ontdek_project", category: "project_2", label: "scroll naar highlights" })}
+          className="inline-block text-[10px] font-bold tracking-[0.3em] uppercase text-red-900 border border-red-900/30 px-8 py-4 rounded-full hover:bg-red-900 hover:text-white transition-all duration-300"
+        >
           Ontdek het project ↓
         </a>
 
         {data.images[0] && (
-          <div className="relative w-full max-w-5xl mx-auto mt-20 aspect-video rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
-            <Image src={data.images[0]} alt={data.title} fill className="object-cover" priority />
+          <div
+            className="relative w-full max-w-5xl mx-auto mt-20 aspect-video rounded-3xl overflow-hidden shadow-2xl border border-gray-100 cursor-zoom-in group"
+            onClick={() => {
+              setLightboxImage(data.images[0])
+              gaEvent({ action: "image_lightbox_open", category: "project_2", label: "hero afbeelding" })
+            }}
+          >
+            <Image src={data.images[0]} alt={data.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" priority />
             <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
             <p className="absolute bottom-5 left-0 right-0 text-center text-white/70 text-[10px] uppercase tracking-[0.3em] font-bold">
               {data.title} — {data.status}
@@ -82,9 +106,15 @@ const DesignA = ({ data, setLightboxImage, scrollProgress }: any) => {
           <p className="text-center text-gray-400 font-light mb-14 text-sm max-w-xl mx-auto">Vijf kernmomenten uit het project — van concept tot realisatie.</p>
 
           <div className="flex gap-2 justify-center flex-wrap mb-10">
-            {highlights.map((_, i) => (
-              <button key={i} onClick={() => setActiveHighlight(i)}
-                className={`w-9 h-9 rounded-full text-xs font-black border-2 transition-all duration-200 ${activeHighlight === i ? 'bg-red-900 border-red-900 text-white scale-110' : 'border-gray-200 text-gray-400 hover:border-red-900 hover:text-red-900'}`}>
+            {highlights.map((h, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  setActiveHighlight(i)
+                  gaEvent({ action: `highlight_click_${i + 1}`, category: "project_2", label: `highlight ${i + 1}: ${h.label}` })
+                }}
+                className={`w-9 h-9 rounded-full text-xs font-black border-2 transition-all duration-200 ${activeHighlight === i ? 'bg-red-900 border-red-900 text-white scale-110' : 'border-gray-200 text-gray-400 hover:border-red-900 hover:text-red-900'}`}
+              >
                 {i + 1}
               </button>
             ))}
@@ -116,13 +146,17 @@ const DesignA = ({ data, setLightboxImage, scrollProgress }: any) => {
 
           <div className="space-y-0">
             {sections.map((s, i) => (
-              <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start border-t border-gray-200 py-14">
+              <div
+                key={i}
+                onClick={() => gaEvent({ action: `tekstsectie_click_${s.tag}`, category: "project_2", label: s.title })}
+                className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start border-t border-gray-200 py-14 cursor-pointer group"
+              >
                 <div className="md:col-span-4">
                   <div className="flex items-center gap-3 text-red-900 mb-2">
                     {s.icon}
                     <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400">{s.tag}</p>
                   </div>
-                  <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-gray-900">{s.title}</h3>
+                  <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-gray-900 group-hover:text-red-900 transition-colors">{s.title}</h3>
                 </div>
                 <div
                   className="md:col-span-8 space-y-5 text-gray-600 font-light leading-relaxed text-base md:text-lg"
@@ -141,7 +175,11 @@ const DesignA = ({ data, setLightboxImage, scrollProgress }: any) => {
           <h2 className="text-center text-3xl md:text-4xl font-black text-gray-900 mb-16 tracking-tight uppercase">Waarom dit project.</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {data.coreValues.map((v: any, i: number) => (
-              <div key={i} className="bg-gray-50 rounded-2xl p-8 md:p-10 border border-gray-100 space-y-4 hover:border-red-900/20 hover:shadow-sm transition-all">
+              <div
+                key={i}
+                onClick={() => gaEvent({ action: `kernwaarde_click_${v.label}_vs_${v.vs}`, category: "project_2", label: `${v.label} vs ${v.vs}` })}
+                className="bg-gray-50 rounded-2xl p-8 md:p-10 border border-gray-100 space-y-4 hover:border-red-900/20 hover:shadow-sm transition-all cursor-pointer"
+              >
                 <div className="flex items-center justify-between">
                   <span className="font-black text-xl uppercase tracking-tight text-gray-900">{v.label}</span>
                   <span className="text-[10px] font-black text-red-900/40 tracking-widest">VS</span>
@@ -168,7 +206,13 @@ const DesignA = ({ data, setLightboxImage, scrollProgress }: any) => {
             <div className="aspect-video rounded-3xl bg-gray-100 flex items-center justify-center text-gray-300 text-xs uppercase tracking-widest">Geen afbeeldingen toegevoegd</div>
           )}
           {data.images.length === 1 && (
-            <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-xl cursor-zoom-in group" onClick={() => setLightboxImage(data.images[0])}>
+            <div
+              className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-xl cursor-zoom-in group"
+              onClick={() => {
+                setLightboxImage(data.images[0])
+                gaEvent({ action: "image_lightbox_open", category: "project_2", label: "galerij enkel beeld" })
+              }}
+            >
               <Image src={data.images[0]} alt="Galerij" fill className="object-cover group-hover:scale-105 transition-all duration-700" />
               <div className="absolute inset-0 bg-red-900/10 opacity-0 group-hover:opacity-100 transition-all" />
             </div>
@@ -176,7 +220,14 @@ const DesignA = ({ data, setLightboxImage, scrollProgress }: any) => {
           {data.images.length === 2 && (
             <div className="grid grid-cols-2 gap-4">
               {data.images.map((img: string, i: number) => (
-                <div key={i} className="relative aspect-video rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group" onClick={() => setLightboxImage(img)}>
+                <div
+                  key={i}
+                  className="relative aspect-video rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group"
+                  onClick={() => {
+                    setLightboxImage(img)
+                    gaEvent({ action: "image_lightbox_open", category: "project_2", label: `galerij beeld ${i + 1}` })
+                  }}
+                >
                   <Image src={img} alt="Galerij" fill className="object-cover group-hover:scale-105 transition-all duration-700" />
                 </div>
               ))}
@@ -184,13 +235,26 @@ const DesignA = ({ data, setLightboxImage, scrollProgress }: any) => {
           )}
           {data.images.length >= 3 && (
             <>
-              <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-xl cursor-zoom-in group mb-4" onClick={() => setLightboxImage(data.images[0])}>
+              <div
+                className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-xl cursor-zoom-in group mb-4"
+                onClick={() => {
+                  setLightboxImage(data.images[0])
+                  gaEvent({ action: "image_lightbox_open", category: "project_2", label: "galerij hoofdbeeld" })
+                }}
+              >
                 <Image src={data.images[0]} alt="Galerij hoofdbeeld" fill className="object-cover group-hover:scale-105 transition-all duration-700" />
                 <div className="absolute inset-0 bg-red-900/10 opacity-0 group-hover:opacity-100 transition-all" />
               </div>
               <div className={`grid gap-4 ${data.images.length - 1 <= 3 ? `grid-cols-${data.images.length - 1}` : 'grid-cols-3'}`}>
                 {data.images.slice(1).map((img: string, i: number) => (
-                  <div key={i} className="relative aspect-square rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group" onClick={() => setLightboxImage(img)}>
+                  <div
+                    key={i}
+                    className="relative aspect-square rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group"
+                    onClick={() => {
+                      setLightboxImage(img)
+                      gaEvent({ action: "image_lightbox_open", category: "project_2", label: `galerij beeld ${i + 2}` })
+                    }}
+                  >
                     <Image src={img} alt="Galerij" fill className="object-cover group-hover:scale-105 transition-all duration-700" />
                     <div className="absolute inset-0 bg-red-900/10 opacity-0 group-hover:opacity-100 transition-all" />
                   </div>
@@ -243,6 +307,9 @@ export default function StageTshirtPage() {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [displayTitle, setDisplayTitle] = useState("")
 
+  const scrollMilestones = useRef<Set<number>>(new Set())
+  const pageStartTime = useRef<number>(Date.now())
+
   const [projectData, setProjectData] = useState({
     title: "STAGE T-SHIRT WEGI",
     subtitle: "Identiteit op het veld. — Het vertalen van clubtrots naar een technisch en visueel sterk ontwerp.",
@@ -263,6 +330,17 @@ export default function StageTshirtPage() {
     ]
   })
 
+  useEffect(() => {
+    gaEvent({ action: "page_view_project_2", category: "project_2", label: "Stage T-shirt WeGi pagina geladen" })
+
+    const handleUnload = () => {
+      const timeSpent = Math.round((Date.now() - pageStartTime.current) / 1000)
+      gaEvent({ action: "time_on_page", category: "project_2", label: `${timeSpent} seconden` })
+    }
+    window.addEventListener("beforeunload", handleUnload)
+    return () => window.removeEventListener("beforeunload", handleUnload)
+  }, [])
+
   // Type-effect op de titel
   useEffect(() => {
     setDisplayTitle("")
@@ -276,7 +354,18 @@ export default function StageTshirtPage() {
   }, [projectData.title])
 
   useEffect(() => {
-    const handleScroll = () => setScrollProgress((window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100)
+    const handleScroll = () => {
+      const progress = Math.round((window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100)
+      setScrollProgress(progress)
+
+      const milestones = [25, 50, 75, 100]
+      milestones.forEach((milestone) => {
+        if (progress >= milestone && !scrollMilestones.current.has(milestone)) {
+          scrollMilestones.current.add(milestone)
+          gaEvent({ action: `scroll_depth_${milestone}`, category: "project_2", label: `${milestone}% gescrolld` })
+        }
+      })
+    }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
@@ -364,7 +453,13 @@ export default function StageTshirtPage() {
             </button>
           </section>
 
-          <button onClick={() => setIsEditMode(false)} className="w-full bg-red-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl">
+          <button
+            onClick={() => {
+              setIsEditMode(false)
+              gaEvent({ action: "editor_save", category: "project_2", label: "wijzigingen opgeslagen" })
+            }}
+            className="w-full bg-red-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl"
+          >
             <Save className="inline-block mr-2" size={16} /> Wijzigingen Opslaan
           </button>
         </div>
@@ -381,7 +476,13 @@ export default function StageTshirtPage() {
 
       {/* ── LIGHTBOX ── */}
       {lightboxImage && (
-        <div className="fixed inset-0 bg-black/98 z-50 flex items-center justify-center p-6 cursor-pointer" onClick={() => setLightboxImage(null)}>
+        <div
+          className="fixed inset-0 bg-black/98 z-50 flex items-center justify-center p-6 cursor-pointer"
+          onClick={() => {
+            setLightboxImage(null)
+            gaEvent({ action: "image_lightbox_close", category: "project_2", label: "lightbox gesloten" })
+          }}
+        >
           <button className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors"><X size={40} /></button>
           <div className="relative w-full h-full max-w-6xl max-h-[85vh]">
             <Image src={lightboxImage} alt="Fullscreen" fill className="object-contain" />

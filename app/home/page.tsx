@@ -267,17 +267,36 @@ export default function HomePage() {
       </section>
 
       {/* OVER MIJ TEASER SECTION */}
-      <section className="max-w-4xl w-full px-6 py-20 md:py-32 text-center border-t border-gray-100 mb-20">
-        <h2 className="text-3xl md:text-4xl font-bold mb-8 text-red-900 uppercase tracking-tighter">De Ontwerper</h2>
-        <p className="text-gray-700 text-xl md:text-3xl leading-tight font-light px-2">
-          Ik ben <span className="font-bold">Thibaut Vanden Eynden</span>, een creatieve grafisch ontwerper gespecialiseerd in branding, fotografie en visuele communicatie. Mijn stijl combineert esthetiek met een sterk concept.
-        </p>
-        <button
-          onClick={() => handleCTAClick("Ontdek mijn verhaal", "/over_mij")}
-          className="mt-12 inline-flex items-center gap-3 text-red-900 font-bold border-b-2 border-red-900 pb-2 text-lg hover:text-black hover:border-black transition-all group mx-auto w-fit"
-        >
-          Ontdek mijn verhaal <FiArrowRight className="group-hover:translate-x-2 transition-transform" />
-        </button>
+      <section className="w-full px-6 py-20 md:py-32">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          {/* Foto */}
+          <div className="relative aspect-4/5 rounded-3xl overflow-hidden bg-gray-100 shadow-2xl">
+            <Image
+              src="/IMG/Thibaut2.jpg"
+              alt="Thibaut Vanden Eynden"
+              fill
+              className="object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+            />
+            <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-3 rounded-2xl border border-gray-100 shadow-lg">
+              <p className="text-[9px] font-black tracking-[0.3em] uppercase text-red-900">Thibaut Vanden Eynden</p>
+              <p className="text-[9px] font-light text-gray-400 uppercase tracking-widest mt-0.5">Grafisch ontwerper · Antwerpen</p>
+            </div>
+          </div>
+
+          {/* Tekst */}
+          <div className="text-center md:text-left">
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-red-900 uppercase tracking-tighter">De Ontwerper</h2>
+            <p className="text-gray-700 text-xl md:text-3xl leading-tight font-light">
+              Ik ben <span className="font-bold">Thibaut Vanden Eynden</span>, een creatieve grafisch ontwerper gespecialiseerd in branding, fotografie en visuele communicatie. Mijn stijl combineert esthetiek met een sterk concept.
+            </p>
+            <button
+              onClick={() => handleCTAClick("Ontdek mijn verhaal", "/over_mij")}
+              className="mt-12 inline-flex items-center gap-3 text-red-900 font-bold border-b-2 border-red-900 pb-2 text-lg hover:text-black hover:border-black transition-all group"
+            >
+              Ontdek mijn verhaal <FiArrowRight className="group-hover:translate-x-2 transition-transform" />
+            </button>
+          </div>
+        </div>
       </section>
 
       <style jsx>{`

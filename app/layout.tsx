@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Thibaut Vanden Eynden | Portfolio",
     description: "Grafisch Ontwerp & Digitale Media",
-    url: "https://stthibaut.netlify.app",
+    url: "https://thibautvandeneynden.be",
     siteName: "Thibaut Vanden Eynden",
     locale: "nl_BE",
     type: "website",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     images: ["/og-image.jpg"],
   },
   alternates: {
-    canonical: "https://stthibaut.netlify.app",
+    canonical: "https://thibautvandeneynden.be",
   },
   authors: [{ name: "Thibaut Vanden Eynden" }],
   keywords: [

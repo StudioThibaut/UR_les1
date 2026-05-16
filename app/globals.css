@@ -90,4 +90,67 @@
     font-family: var(--font-oswald), sans-serif !important;
     font-weight: 700;
   }
+    /* ── RESPONSIVE MOBILE ── */
+  @layer utilities {
+
+    /* Verberg social share op kleine schermen */
+    @media (max-width: 640px) {
+      .social-share-mobile-hidden {
+        display: none;
+      }
+    }
+
+    /* Algemene mobile fixes */
+    @media (max-width: 640px) {
+
+      /* Voorkomen dat tekst uit het scherm loopt */
+      h1, h2, h3 {
+        word-break: break-word;
+        hyphens: auto;
+      }
+
+      /* Navbar spacing op mobile */
+      main {
+        padding-top: 5rem;
+      }
+
+      /* Slider hoogte op mobile */
+      .aspect-21\/9 {
+        aspect-ratio: 4/5;
+      }
+
+      /* Grote titels kleiner op mobile */
+      .text-\[clamp\(4rem\,12vw\,10rem\)\] {
+        font-size: clamp(3rem, 15vw, 6rem);
+      }
+
+      /* Padding aanpassen op mobile */
+      .px-6 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      /* Social share verbergen op mobile */
+      .fixed.right-5.bottom-8 {
+        display: none;
+      }
+
+      /* Footer kolommen op mobile */
+      .grid-cols-3 {
+        grid-template-columns: 1fr;
+      }
+
+      /* Bento grid op mobile */
+      .grid-cols-3.gap-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Tablet fixes */
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  }
 }

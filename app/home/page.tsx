@@ -40,9 +40,7 @@ export default function HomePage() {
   const pageStartTime = useRef<number>(Date.now())
 
   useEffect(() => {
-    const shuffled = [...allProjects]
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 3)
+    const shuffled = [...allProjects].sort(() => 0.5 - Math.random()).slice(0, 3)
     setProjects(shuffled)
 
     gaEvent({ action: "page_view_home", category: "home", label: "homepage geladen" })
@@ -76,11 +74,7 @@ export default function HomePage() {
       milestones.forEach((milestone) => {
         if (progress >= milestone && !scrollMilestones.current.has(milestone)) {
           scrollMilestones.current.add(milestone)
-          gaEvent({
-            action: `scroll_depth_${milestone}`,
-            category: "home",
-            label: `${milestone}% gescrolld`,
-          })
+          gaEvent({ action: `scroll_depth_${milestone}`, category: "home", label: `${milestone}% gescrolld` })
         }
       })
     }
@@ -145,77 +139,76 @@ export default function HomePage() {
         style={{ width: `${scrollProgress}%` }}
       />
 
-      {/* HERO SECTION */}
-      <section className="flex flex-col items-center justify-center min-h-[90vh] w-full px-6 lg:px-12 text-center relative py-20">
+      {/* ── HERO SECTION ── */}
+      <section className="flex flex-col items-center justify-center min-h-[90vh] w-full px-4 sm:px-6 lg:px-12 text-center relative py-16 sm:py-20">
         <div className="flex flex-col items-center relative z-10 w-full max-w-7xl">
-          <h1 className="leading-[0.85] mb-6">
-            <span className="block font-barlow text-[clamp(4rem,12vw,10rem)] font-light tracking-wide uppercase text-gray-900">
+          <h1 className="leading-[0.85] mb-4 sm:mb-6 w-full">
+            <span className="block font-barlow text-[clamp(2.5rem,10vw,10rem)] font-light tracking-wide uppercase text-gray-900">
               Thibaut
             </span>
-            <span className="block text-red-900 text-[clamp(4rem,12vw,10rem)] font-bold tracking-tight whitespace-nowrap min-h-[1.1em]">
+            <span className="block text-red-900 text-[clamp(2rem,8vw,10rem)] font-bold tracking-tight min-h-[1.1em] break-words">
               {lastName}
               <span className="ml-1 opacity-40 animate-pulse"></span>
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl lg:text-2xl text-gray-500 max-w-3xl tracking-wide uppercase font-medium px-4">
-            Grafisch ontwerp <span className="mx-2 text-red-900/10">|</span> Branding <span className="mx-2 text-red-900/10">|</span> Fotografie
+          <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-gray-500 max-w-3xl tracking-wide uppercase font-medium px-2 sm:px-4">
+            Grafisch ontwerp <span className="mx-1 sm:mx-2 text-red-900/10">|</span> Branding <span className="mx-1 sm:mx-2 text-red-900/10">|</span> Fotografie
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-12 animate-fadeIn w-full sm:w-auto px-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mt-8 sm:mt-12 animate-fadeIn w-full sm:w-auto px-4 sm:px-6">
             <button
               onClick={() => handleCTAClick("Bekijk Projecten", "/portfolio")}
-              className="px-8 md:px-10 py-4 bg-red-900 text-white rounded-full font-semibold hover:bg-black transition-all duration-300 shadow-xl shadow-red-900/10 text-center"
+              className="w-full sm:w-auto px-8 md:px-10 py-4 bg-red-900 text-white rounded-full font-semibold hover:bg-black transition-all duration-300 shadow-xl shadow-red-900/10 text-center text-sm sm:text-base"
             >
               Bekijk Projecten
             </button>
             <button
               onClick={() => handleCTAClick("Over Mij", "/over_mij")}
-              className="px-8 md:px-10 py-4 border-2 border-red-900 text-red-900 rounded-full font-semibold hover:bg-red-900 hover:text-white transition-all duration-300 text-center"
+              className="w-full sm:w-auto px-8 md:px-10 py-4 border-2 border-red-900 text-red-900 rounded-full font-semibold hover:bg-red-900 hover:text-white transition-all duration-300 text-center text-sm sm:text-base"
             >
               Over Mij
             </button>
           </div>
         </div>
 
-        {/* SCROLL INDICATOR — nu klikbaar + getrackt */}
         <button
           onClick={handleScrollIndicator}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30 animate-bounce hover:opacity-60 transition-opacity"
+          className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30 animate-bounce hover:opacity-60 transition-opacity"
         >
           <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Scroll</span>
-          <div className="w-px h-8 bg-gray-900"></div>
+          <div className="w-px h-6 sm:h-8 bg-gray-900"></div>
         </button>
       </section>
 
-      {/* PROJECT SLIDER SECTION */}
-      <section className="w-full max-w-400 mx-auto px-6 py-24">
-        <div className="flex justify-between items-end mb-12 px-2">
-          <div className="space-y-2">
+      {/* ── PROJECT SLIDER SECTION ── */}
+      <section className="w-full max-w-400 mx-auto px-4 sm:px-6 py-12 sm:py-24">
+        <div className="flex justify-between items-end mb-8 sm:mb-12 px-1 sm:px-2">
+          <div className="space-y-2 flex-1 min-w-0 pr-4">
             <button
               onClick={() => handleCTAClick("Mijn projecten", "/portfolio")}
-              className="group relative inline-flex items-center gap-6"
+              className="group relative inline-flex items-center gap-4 sm:gap-6 w-full"
             >
-              <div className="relative">
-                <h2 className="text-4xl md:text-6xl font-black text-gray-900 uppercase tracking-tighter leading-none transition-colors group-hover:text-red-900">
+              <div className="relative min-w-0">
+                <h2 className="text-2xl sm:text-4xl md:text-6xl font-black text-gray-900 uppercase tracking-tighter leading-none transition-colors group-hover:text-red-900 break-words">
                   Mijn projecten
                 </h2>
-                <span className="absolute -bottom-2 left-0 w-full h-1.5 bg-red-900 origin-left scale-x-[0.3] transition-transform duration-500 ease-out group-hover:scale-x-100" />
+                <span className="absolute -bottom-2 left-0 w-full h-1 sm:h-1.5 bg-red-900 origin-left scale-x-[0.3] transition-transform duration-500 ease-out group-hover:scale-x-100" />
               </div>
-              <FiArrowRight size={40} className="text-red-900 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 hidden md:block" />
+              <FiArrowRight size={28} className="text-red-900 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 hidden md:block shrink-0" />
             </button>
           </div>
-          <div className="flex gap-2">
-            <button onClick={prevSlide} className="p-4 md:p-6 border border-gray-100 rounded-2xl hover:bg-red-900 hover:text-white transition-all shadow-sm active:scale-90">
-              <FiChevronLeft size={24} />
+          <div className="flex gap-2 shrink-0">
+            <button onClick={prevSlide} className="p-3 sm:p-4 md:p-6 border border-gray-100 rounded-xl sm:rounded-2xl hover:bg-red-900 hover:text-white transition-all shadow-sm active:scale-90">
+              <FiChevronLeft size={20} />
             </button>
-            <button onClick={nextSlide} className="p-4 md:p-6 bg-black text-white rounded-2xl hover:bg-red-900 transition-all shadow-xl active:scale-90">
-              <FiChevronRight size={24} />
+            <button onClick={nextSlide} className="p-3 sm:p-4 md:p-6 bg-black text-white rounded-xl sm:rounded-2xl hover:bg-red-900 transition-all shadow-xl active:scale-90">
+              <FiChevronRight size={20} />
             </button>
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[2rem] md:rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.07)] bg-gray-50 aspect-4/5 md:aspect-21/9">
+        <div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] md:rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.07)] bg-gray-50 aspect-4/5 sm:aspect-4/3 md:aspect-21/9">
           <div
             className="flex h-full transition-transform duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)]"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -234,16 +227,16 @@ export default function HomePage() {
                   priority={index === 0}
                   sizes="100vw"
                 />
-                <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/10 to-transparent flex flex-col justify-end p-8 md:p-20">
-                  <span className="text-red-900 font-mono text-xs mb-4">/ 0{index + 1}</span>
-                  <h3 className="text-white text-4xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-4">
+                <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/10 to-transparent flex flex-col justify-end p-6 sm:p-8 md:p-20">
+                  <span className="text-red-900 font-mono text-xs mb-2 sm:mb-4">/ 0{index + 1}</span>
+                  <h3 className="text-white text-2xl sm:text-4xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-3 sm:mb-4">
                     {project.title}
                   </h3>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     <span className="px-3 py-1 border border-white/20 rounded-full text-[9px] text-white font-bold uppercase tracking-widest">
                       {project.tag}
                     </span>
-                    <p className="text-white/40 font-bold text-[10px] uppercase tracking-widest group-hover:text-white transition-colors">
+                    <p className="text-white/40 font-bold text-[10px] uppercase tracking-widest group-hover:text-white transition-colors hidden sm:block">
                       View Project —
                     </p>
                   </div>
@@ -253,31 +246,32 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="flex justify-center items-center gap-4 mt-12">
+        <div className="flex justify-center items-center gap-3 sm:gap-4 mt-8 sm:mt-12">
           {projects.map((_, index) => (
             <button
               key={index}
               onClick={() => handleDotClick(index)}
               className={`h-1 transition-all duration-500 rounded-full ${
-                currentIndex === index ? "w-12 bg-red-900" : "w-4 bg-gray-200"
+                currentIndex === index ? "w-10 sm:w-12 bg-red-900" : "w-3 sm:w-4 bg-gray-200"
               }`}
             />
           ))}
         </div>
       </section>
 
-      {/* OVER MIJ TEASER SECTION */}
-      <section className="w-full px-6 py-20 md:py-32">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          {/* Foto */}
-          <div className="relative aspect-4/5 rounded-3xl overflow-hidden bg-gray-100 shadow-2xl">
+      {/* ── OVER MIJ TEASER SECTION ── */}
+      <section className="w-full px-4 sm:px-6 py-16 sm:py-20 md:py-32">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-16 items-center">
+
+          {/* Foto — op mobiel kleiner */}
+          <div className="relative aspect-4/5 sm:aspect-4/5 rounded-2xl sm:rounded-3xl overflow-hidden bg-gray-100 shadow-2xl max-h-[60vh] sm:max-h-none">
             <Image
               src="/IMG/Thibaut2.jpg"
               alt="Thibaut Vanden Eynden"
               fill
               className="object-cover grayscale hover:grayscale-0 transition-all duration-1000"
             />
-            <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-3 rounded-2xl border border-gray-100 shadow-lg">
+            <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 bg-white/90 backdrop-blur-sm px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-100 shadow-lg">
               <p className="text-[9px] font-black tracking-[0.3em] uppercase text-red-900">Thibaut Vanden Eynden</p>
               <p className="text-[9px] font-light text-gray-400 uppercase tracking-widest mt-0.5">Grafisch ontwerper · Antwerpen</p>
             </div>
@@ -285,13 +279,13 @@ export default function HomePage() {
 
           {/* Tekst */}
           <div className="text-center md:text-left">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-red-900 uppercase tracking-tighter">De Ontwerper</h2>
-            <p className="text-gray-700 text-xl md:text-3xl leading-tight font-light">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 sm:mb-8 text-red-900 uppercase tracking-tighter">De Ontwerper</h2>
+            <p className="text-gray-700 text-lg sm:text-xl md:text-3xl leading-tight font-light">
               Ik ben <span className="font-bold">Thibaut Vanden Eynden</span>, een creatieve grafisch ontwerper gespecialiseerd in branding, fotografie en visuele communicatie. Mijn stijl combineert esthetiek met een sterk concept.
             </p>
             <button
               onClick={() => handleCTAClick("Ontdek mijn verhaal", "/over_mij")}
-              className="mt-12 inline-flex items-center gap-3 text-red-900 font-bold border-b-2 border-red-900 pb-2 text-lg hover:text-black hover:border-black transition-all group"
+              className="mt-8 sm:mt-12 inline-flex items-center gap-3 text-red-900 font-bold border-b-2 border-red-900 pb-2 text-base sm:text-lg hover:text-black hover:border-black transition-all group mx-auto md:mx-0"
             >
               Ontdek mijn verhaal <FiArrowRight className="group-hover:translate-x-2 transition-transform" />
             </button>
